@@ -1,6 +1,11 @@
 .TH ipk-client 1
 .SH NAME ipk-client - client for solving mathematical operations 
 .SH SYNOPSIS
-.B ipk-client [\fB] 
+.B ipk-client
+.IR ip 
 .SH DESCRIPTION 
 .B ipk-client client for solving mathematical operations, connects to server, asks for math operations and sends back results
+.SH OPTIONS
+.TP
+.BR \ip
+Set the IP Address of the server that should be used for communication for receiving mathetmatical operations. IP Address can be a IPv4, or IPv6
