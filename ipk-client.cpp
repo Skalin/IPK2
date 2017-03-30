@@ -150,7 +150,7 @@ int main(int argc, char *argv[]) {
 	char response[1024];
 	int rcv;
 	for (;;) {
-		if ((rcv = recv(client_socket, response, 1025, 0)) > 0) {
+		if ((rcv = recv(client_socket, response, 1024, 0)) > 0) {
 			string msg(response);
 			int op;
 			if ((op = (getOp(cmd = getCmd(msg)))) == 0) {
