@@ -1,10 +1,13 @@
 .TH ipk-client 1
-.SH NAME ipk-client - client for solving mathematical operations 
+.SH NAME ipk-client - client for solving mathematical
+operations
 .SH SYNOPSIS
 .B ipk-client
-.IR ip 
-.SH DESCRIPTION 
-.B ipk-client client for solving mathematical operations, connects to server, asks for math operations and sends back results
+.IR ip
+.SH DESCRIPTION
+.B ipk-client
+client for solving mathematical operations, connects to
+server, asks for math operations and sends back results
 .SH OPTIONS
 .TP
 .BR \ip
