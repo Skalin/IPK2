@@ -90,8 +90,8 @@ int checkMessageValidity(string message) {
 
 string createHello() {
 	string msg;
-	// todo hashing
-	string hash;
+	// todo hashing, current state is temporary
+	string hash = "f92f0527f211c422c36e9970bc2be3be";
 
 	return msg = "HELLO "+hash;
 }
