@@ -20,6 +20,9 @@
 
 using namespace std;
 
+// login const to be hashed
+const string login = "xskala11";
+
 
 /*
  * Function prints a error message on cerr and exits program
