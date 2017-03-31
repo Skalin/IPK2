@@ -139,7 +139,7 @@ string createHello() {
 int main(int argc, char *argv[]) {
 
 	if (argc != 2) {
-		throwException("Error: Wrong amount of arguments.");
+				throwException("Error: Wrong amount of arguments.");
 	}
 
 	// port was defined in the task assignment
@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
 		serveraddr.sin6_addr = in6_addr(argv[1]);
 		serveraddr.sin6_port = htons(port);
 	} else {
-struct sockaddr_in serveraddr;
+		struct sockaddr_in serveraddr;
 		throwException("Error: Unknown format of IP address.");
 	}
 
