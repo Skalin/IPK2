@@ -212,7 +212,7 @@ int main(int argc, char *argv[]) {
 				int rst = getResult(arr);
 				// conv int to string
 				string result = itoa(rst);
-				send(client_socket, result.c_str(), result.size());
+				send(client_socket, result.c_str(), result.size(), 0);
 			} else {
 				// we did receive something that shouldn't be received, program will now try to read another message from server (probably wrong memory access, or corrupted memory block)
 				continue;
