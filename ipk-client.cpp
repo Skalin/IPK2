@@ -125,6 +125,7 @@ int getResult(string *array) {
 	} else if (arr[1] == "/") {
 		result = operand1 / operand2;
 	}
+	return result;
 }
 
 string createHello() {
