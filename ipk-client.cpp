@@ -111,7 +111,7 @@ string *parseMessage(string message) {
 	return arr;	
 }
 
-int getResult(string *array) {
+int getResult(string *arr) {
 	int operand1 = strtol(arr[0].c_str());
 	int operand2 = strtol(arr[2].c_str());
 	int result = 0;
