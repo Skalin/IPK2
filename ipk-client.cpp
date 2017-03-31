@@ -159,7 +159,7 @@ int main(int argc, char *argv[]) {
 	if (res->ai_family == AF_INET) {
 		struct sockaddr_in serveraddr;
 		serveraddr.sin_port = htons(port);
-		serveraddr.sin_family = res->ai_family
+		serveraddr.sin_family = res->ai_family;
 		serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	} else if (res->ai_family == AF_INET6) {
 		struct sockaddr_in6 serveraddr;
