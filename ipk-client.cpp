@@ -93,8 +93,6 @@ string createHello() {
 
 int main(int argc, char *argv[]) {
 
-	string cmd;
-
 	if (argc != 2) {
 		throwException("Error: Wrong amount of arguments.");
 	}
@@ -104,7 +102,6 @@ int main(int argc, char *argv[]) {
 
 	struct sockaddr_in serveraddr;
 
-	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_port = htons(port);
 	// get IP info
 	struct addrinfo hint, *res = NULL;
@@ -118,10 +115,8 @@ int main(int argc, char *argv[]) {
 		throwException("Error: Invalid IP address.");
 	}
 
-	if (res->ai_family == AF_INET) {
-		serveraddr.sin_family = AF_INET;
-	} else if (res->ai_family == AF_INET6) {
-		serveraddr.sin_family = AF_INET6;
+	if (res->ai_family == AF_INET || res->ai_family == AF_INET6) {
+		serveraddr.sin_family = res->ai_family;
 	} else {
 		throwException("Error: Unknown format of IP address.");
 	}
