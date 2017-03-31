@@ -74,10 +74,10 @@ int parseBye(string message) {
 
 	string hash;
 	if ((hash = returnSubstring(returnSubstring(message, "\n", false), " ", true)) == "") {
-		return 1;
+		return 0;
 	} else {
 		cout << hash << endl;
-		return 0;
+		return 1;
 	}
 }
 
@@ -91,13 +91,41 @@ int checkMessageValidity(string message) {
 	} else {
 		return 1;
 	}
+	
+	
+	// todo osetreni chybovych stavu
 }
 
 string *parseMessage(string message) {
 	
+	string parsed = returnSubstring(returnSubstring(message, "\n", false), " ", true); // math op with two operands - operand operator operand
 	
+	string *arr = new string[3];
+	
+	arr[0] = returnSubstring(parsed, " ", false); // operand no.1
+	parsed = returnSubstring(parsed, " ", true); // operator operand
+	arr[1] = returnSubstring(parsed, " ", false); // operator
+	parsed = returnSubstring(parsed, " ", true); // operand
+	arr[2] = parsed; // operand
+	
+	return arr;	
 }
 
+int getResult(string *array) {
+	int operand1 = strtol(arr[0].c_str());
+	int operand2 = strtol(arr[2].c_str());
+	int result = 0;
+	
+	if (arr[1] == "+") {
+		result = operand1 + operand2;
+	} else if (arr[1] == "-") {
+		result = operand1 - operand2;
+	} else if (arr[1] == "*") {
+		result = operand1 * operand2;
+	} else if (arr[1] == "/") {
+		result = operand1 / operand2;
+	}
+}
 
 string createHello() {
 	string msg;
@@ -167,8 +195,8 @@ int main(int argc, char *argv[]) {
 				continue;
 			} else if (op == 1) {
 				// bye
-				if (parseBye(msg)) {
-					// if bye msg was is not ok, we will for new cycle of the cycle
+				if (!parseBye(msg)) {
+					// if bye msg is not ok, we will continue for new iteration of the cycle
 					continue;
 				} else {
 					// if bye message format is ok, break to close socket
@@ -176,7 +204,7 @@ int main(int argc, char *argv[]) {
 				}
 			} else if (op == 2) {
 				// solve
-				if (checkMessageValidity(message)) {
+				if (!checkMessageValidity(message)) {
 					continue;
 				}
 				
