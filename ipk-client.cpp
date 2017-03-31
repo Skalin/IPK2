@@ -168,6 +168,7 @@ int main(int argc, char *argv[]) {
 		serveraddr.sin6_addr = in6_addr(argv[1]);
 		serveraddr.sin6_port = htons(port);
 	} else {
+struct sockaddr_in serveraddr;
 		throwException("Error: Unknown format of IP address.");
 	}
 
