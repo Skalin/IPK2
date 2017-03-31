@@ -163,8 +163,9 @@ int main(int argc, char *argv[]) {
 		serveraddr.sin_addr.s_addr = inet_addr(argv[1]);
 	} else if (res->ai_family == AF_INET6) {
 		struct sockaddr_in6 serveraddr;
-		serveraddr.sin_family = res->ai_family;
+		serveraddr.sin6_family = res->ai_family;
 		serveraddr.sin6_addr.s_addr = in6_addr(argv[1]);
+		serveraddr.sin6_port = htons(port);
 	} else {
 		throwException("Error: Unknown format of IP address.");
 	}
