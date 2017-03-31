@@ -145,6 +145,7 @@ int main(int argc, char *argv[]) {
 			int op;
 			if ((op = (getOp(cmd = getCmd(msg)))) == 0) {
 				// 0 means wrong format, new iteration of cycle
+				continue;
 			} else if (op == 1) {
 				// bye
 				if (parseBye(msg)) {
@@ -159,8 +160,12 @@ int main(int argc, char *argv[]) {
 				if (checkMessageValidity(message)) {
 					continue;
 				}
-
-
+				
+				string *arr = parseMessage(message);
+				int rst = getResult(arr);
+				// conv int to string
+				string result = itoa(rst);
+				send(client_socket, result.c_str(), result.size());
 			} else {
 				// we did receive something that shouldn't be received, program will now try to read another message from server (probably wrong memory access, or corrupted memory block)
 				continue;
