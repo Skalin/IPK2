@@ -82,9 +82,22 @@ int parseBye(string message) {
 }
 
 int checkMessageValidity(string message) {
-
-
+	
+	string parsed = returnSubstring(returnSubstring(message, "\n", false), " ", true); // math op with two operands - operand operator operand
+	parsed = returnSubstring(parsed, " ", true); // operator operand
+	parsed = returnSubstring(parsed, " ", true); // operand
+	if (returnSubstring(parsed, " ", true) == "") {
+		return 0;
+	} else {
+		return 1;
+	}
 }
+
+string *parseMessage(string message) {
+	
+	
+}
+
 
 string createHello() {
 	string msg;
