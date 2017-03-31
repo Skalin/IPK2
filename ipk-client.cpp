@@ -165,7 +165,7 @@ int main(int argc, char *argv[]) {
 	} else if (res->ai_family == AF_INET6) {
 		struct sockaddr_in6 serveraddr;
 		serveraddr.sin6_family = res->ai_family;
-		serveraddr.sin6_addr.s_addr = in6_addr(argv[1]);
+		serveraddr.sin6_addr = in6_addr(argv[1]);
 		serveraddr.sin6_port = htons(port);
 	} else {
 		throwException("Error: Unknown format of IP address.");
@@ -192,7 +192,7 @@ int main(int argc, char *argv[]) {
 		if ((rcv = recv(client_socket, response, 1024, 0)) > 0) {
 			string msg(response);
 			int op;
-			if ((op = (getOp(cmd = getCmd(msg)))) == 1) {
+			if ((op = (getOp(getCmd(msg)))) == 1) {
 				// bye
 				if (!parseBye(msg)) {
 					// if bye msg is not ok, we will continue for new iteration of the cycle
