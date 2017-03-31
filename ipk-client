@@ -3,7 +3,7 @@
 operations
 .SH SYNOPSIS
 .B ipk-client
-.IR ip
+.IP ip
 .SH DESCRIPTION
 .B ipk-client
 client for solving mathematical operations, connects to
