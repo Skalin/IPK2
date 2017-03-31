@@ -191,10 +191,7 @@ int main(int argc, char *argv[]) {
 		if ((rcv = recv(client_socket, response, 1024, 0)) > 0) {
 			string msg(response);
 			int op;
-			if ((op = (getOp(cmd = getCmd(msg)))) == 0) {
-				// 0 means wrong format, new iteration of cycle
-				continue;
-			} else if (op == 1) {
+			if ((op = (getOp(cmd = getCmd(msg)))) == 1) {
 				// bye
 				if (!parseBye(msg)) {
 					// if bye msg is not ok, we will continue for new iteration of the cycle
