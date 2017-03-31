@@ -53,7 +53,7 @@ string returnSubstring(string String, string delimiter, bool way){
 }
 
 string getCmd(string msg) {
-	return returnSubstring(returnSubstring(msg, "\n", false), " ", true);
+	return returnSubstring(returnSubstring(msg, "\n", false), " ", false);
 }
 
 int getOp(string cmd) {
