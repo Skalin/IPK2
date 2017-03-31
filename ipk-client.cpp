@@ -58,18 +58,13 @@ string getCmd(string msg) {
 
 int getOp(string cmd) {
 
-	int code;
-
+	int code = 0;
 	if (cmd == "BYE") {
 		code = 1;
 	} else if (cmd == "SOLVE") {
 		code = 2;
-	} else {
-		code = 0;
 	}
-
 	return code;
-
 }
 
 int parseBye(string message) {
@@ -172,12 +167,12 @@ int main(int argc, char *argv[]) {
 
 
 			} else {
-				// we did receive something that shouldn't be received, program will now exit correctly (probably wrong memory access, or corrupted memory block)
-				throwException("Error: Unknown error.");
+				// we did receive something that shouldn't be received, program will now try to read another message from server (probably wrong memory access, or corrupted memory block)
+				continue;
 			}
 		} else {
 			if (rcv == 0) {
-				break;\\\\\
+				break;
 			}
 			throwException("Error: Couldn't read data from server correctly.");
 		}
