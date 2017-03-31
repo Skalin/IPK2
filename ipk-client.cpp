@@ -160,12 +160,11 @@ int main(int argc, char *argv[]) {
 		struct sockaddr_in serveraddr;
 		serveraddr.sin_port = htons(port);
 		serveraddr.sin_family = res->ai_family;
-		serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+		serveraddr.sin_addr.s_addr = inet_addr(argv[1]);
 	} else if (res->ai_family == AF_INET6) {
 		struct sockaddr_in6 serveraddr;
 		serveraddr.sin_family = res->ai_family;
-		serveraddr.sin6_addr.s_addr = htonl(INADDR_ANY);
-		bcopy((char *)server->h_addr, (char *)&serverAddress.sin_addr.s_addr, server->h_length);
+		serveraddr.sin6_addr.s_addr = in6_addr(argv[1]);
 	} else {
 		throwException("Error: Unknown format of IP address.");
 	}
