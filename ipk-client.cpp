@@ -103,9 +103,6 @@ int main(int argc, char *argv[]) {
 	// port was defined in the task assignment
 	unsigned short port = 55555;
 
-	struct sockaddr_in serveraddr;
-
-	serveraddr.sin_port = htons(port);
 	// get IP info
 	struct addrinfo hint, *res = NULL;
 
@@ -118,13 +115,19 @@ int main(int argc, char *argv[]) {
 		throwException("Error: Invalid IP address.");
 	}
 
-	if (res->ai_family == AF_INET || res->ai_family == AF_INET6) {
+	if (res->ai_family == AF_INET) {
+		struct sockaddr_in serveraddr;
+		serveraddr.sin_port = htons(port);
+		serveraddr.sin_family = res->ai_family
+		serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	} else if (res->ai_family == AF_INET6) {
+		struct sockaddr_in6 serveraddr;
 		serveraddr.sin_family = res->ai_family;
+		serveraddr.sin6_addr.s_addr = htonl(INADDR_ANY);
 	} else {
 		throwException("Error: Unknown format of IP address.");
 	}
 
-	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	freeaddrinfo(res);
 
 	int client_socket;
