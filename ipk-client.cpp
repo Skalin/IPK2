@@ -165,6 +165,7 @@ int main(int argc, char *argv[]) {
 		struct sockaddr_in6 serveraddr;
 		serveraddr.sin_family = res->ai_family;
 		serveraddr.sin6_addr.s_addr = htonl(INADDR_ANY);
+		bcopy((char *)server->h_addr, (char *)&serverAddress.sin_addr.s_addr, server->h_length);
 	} else {
 		throwException("Error: Unknown format of IP address.");
 	}
