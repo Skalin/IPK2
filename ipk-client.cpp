@@ -16,7 +16,6 @@
 #include <sstream>
 #include <iostream>
 #include <time.h>
-#include <openssl/evp.h>
 
 using namespace std;
 
@@ -111,9 +110,16 @@ string *parseMessage(string message) {
 	return arr;	
 }
 
+int convertStringToInt() {
+
+	int number = 0;
+
+	return number;
+}
+
 int getResult(string *arr) {
-	int operand1 = strtol(arr[0].c_str());
-	int operand2 = strtol(arr[2].c_str());
+	int operand1 = atoi(arr[0].c_str());
+	int operand2 = atoi(arr[2].c_str());
 	int result = 0;
 	
 	if (arr[1] == "+") {
@@ -157,84 +163,92 @@ int main(int argc, char *argv[]) {
 		throwException("Error: Invalid IP address.");
 	}
 
+	int ip = 0;
+
+	struct sockaddr_in serveraddr;
+	struct sockaddr_in6 serveraddr6;
 	if (res->ai_family == AF_INET) {
-		struct sockaddr_in serveraddr;
 		serveraddr.sin_port = htons(port);
-		serveraddr.sin_family = res->ai_family;
+		serveraddr.sin_family = (short)res->ai_family;
 		serveraddr.sin_addr.s_addr = inet_addr(argv[1]);
+		ip = 4;
 	} else if (res->ai_family == AF_INET6) {
-		struct sockaddr_in6 serveraddr;
-		serveraddr.sin6_family = res->ai_family;
-		serveraddr.sin6_addr = in6_addr(argv[1]);
-		serveraddr.sin6_port = htons(port);
+		serveraddr6.sin6_family = (short)res->ai_family;
+		inet_pton(AF_INET6, argv[1], &serveraddr6.sin6_addr.s6_addr);
+		serveraddr6.sin6_port = htons(port);
+		ip = 6;
 	} else {
-		struct sockaddr_in serveraddr;
 		throwException("Error: Unknown format of IP address.");
 	}
 
 	freeaddrinfo(res);
 
-	if (serveraddr != NULL) {
-		int client_socket;
-		if (res->ai_family == AF_INET) {
-			if ((client_socket = socket(serveraddr.sin_family, SOCK_STREAM, 0)) < 0) {
-				throwException("Error: Could not open client socket.");
-			}
-		} else {
-			if ((client_socket = socket(serveraddr.sin6_family, SOCK_STREAM, 0)) < 0) {
-				throwException("Error: Could not open client socket.");
+	int client_socket;
+	if (res->ai_family == AF_INET) {
+		if ((client_socket = socket(serveraddr.sin_family, SOCK_STREAM, 0)) < 0) {
+			throwException("Error: Could not open client socket.");
 		}
 
-		if ((connect(client_socket, (struct sockaddr *)&serveraddr, sizeof(serveraddr))) < 0) {
+		if ((connect(client_socket, (struct sockaddr *) &serveraddr, sizeof(serveraddr))) < 0) {
 			throwException("Error: Couldn't connect to server.");
 		}
-
-		string message = createHello();
-
-		send(client_socket, message.c_str(), message.size(), 0);
-
-		char response[1024];
-		int rcv;
-		for (;;) {
-			if ((rcv = recv(client_socket, response, 1024, 0)) > 0) {
-				string msg(response);
-				int op;
-				if ((op = (getOp(getCmd(msg)))) == 1) {
-					// bye
-					if (!parseBye(msg)) {
-						// if bye msg is not ok, we will continue for new iteration of the cycle
-						continue;
-					} else {
-						// if bye message format is ok, break to close socket
-						break;
-					}
-				} else if (op == 2) {
-					// solve
-					if (!checkMessageValidity(message)) {
-						continue;
-					}
-
-					string *arr = parseMessage(message);
-					int rst = getResult(arr);
-					// conv int to string
-					string result = itoa(rst);
-					send(client_socket, result.c_str(), result.size(), 0);
-				} else {
-					// we did receive something that shouldn't be received, program will now try to read another message from server (probably wrong memory access, or corrupted memory block)
-					continue;
-				}
-			} else {
-				if (rcv == 0) {
-					break;
-				}
-				throwException("Error: Couldn't read data from server correctly.");
-			}
+	} else {
+		if ((client_socket = socket(serveraddr6.sin6_family, SOCK_STREAM, 0)) < 0) {
+			throwException("Error: Could not open client socket.");
 		}
 
-		if (close(client_socket) != 0) {
-			throwException("Error: Could not close socket.");
+		if ((connect(client_socket, (struct sockaddr *) &serveraddr6, sizeof(serveraddr6))) < 0) {
+			throwException("Error: Couldn't connect to server.");
 		}
 	}
-	
+
+	string message = createHello();
+
+	send(client_socket, message.c_str(), message.size(), 0);
+
+	char response[1024];
+	int rcv;
+	for (;;) {
+		if ((rcv = recv(client_socket, response, 1024, 0)) > 0) {
+			string msg(response);
+			int op;
+			if ((op = (getOp(getCmd(msg)))) == 1) {
+				// bye
+				if (!parseBye(msg)) {
+					// if bye msg is not ok, we will continue for new iteration of the cycle
+					continue;
+				} else {
+					// if bye message format is ok, break to close socket
+					break;
+				}
+			} else if (op == 2) {
+				// solve
+				if (!checkMessageValidity(message)) {
+					continue;
+				}
+
+				string *arr = parseMessage(message);
+				int rst = getResult(arr);
+				// conv int to string
+				stringstream ss;
+				ss << rst;
+				string result = ss.str();
+				send(client_socket, result.c_str(), result.size(), 0);
+			} else {
+				// we did receive something that shouldn't be received, program will now try to read another message from server (probably wrong memory access, or corrupted memory block)
+				continue;
+			}
+		} else {
+			if (rcv == 0) {
+				break;
+			}
+			throwException("Error: Couldn't read data from server correctly.");
+		}
+	}
+
+	if (close(client_socket) != 0) {
+		throwException("Error: Could not close socket.");
+	}
+
 	return 0;
 }
