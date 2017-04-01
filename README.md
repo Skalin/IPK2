@@ -7,6 +7,7 @@
 
 
 #### Překlad programu je zajištěn pomocí makefile:
+
 | make příkazy | Operace |
 | :-------------------------- | --------:|
 | **make** | překlad klienta **ipk-client**, před překladem se smažou veškeré předchozí verze programu |
@@ -16,6 +17,7 @@
 
 ## Klient **ipk-client**
 ##### $ **ipk-client IP**
+
 | Parametr | Popis |
 |:-----:| :-----:|
 | IP | IP adresa ve formátu IPv4 nebo IPv6, hostname není podporována |
