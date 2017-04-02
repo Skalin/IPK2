@@ -1,0 +1,35 @@
+.TH ipk-client 1
+.SH NAME ipk-client - client for solving mathematical operations
+.SH SYNOPSIS
+.B ipk-client
+.IP ip
+.SH DESCRIPTION
+.B ipk-client
+client for solving mathematical operations, connects to server, asks for math operations and sends back results.
+
+All operations are only integer type operations, FP ops are currently not supported.
+Client can solve any operation from range +,-,*,/.
+It can solve them with numbers up to 64 bits.
+
+The program itself works on a simple base. Client sends request in type of HELLO md5hash(xskala11)\\n, which is resolved from server.
+After that, server is responding with mathematical equations, which must be in format SOLVE [num1] [op] [num2]\\n
+If the operations is successfully resolved, client returns the result in the message with format: RESULT [result]\\n, if any error occurs, client is responding with RESULT ERROR\\n
+This can take any number of iterations. Only the server can stop the process.
+if the server wants to stop, it has to send message in format BYE hash
+
+.SH OPTIONS
+.TP
+.BR \ip
+Set the IP Address of the server that should be used for communication for receiving mathematical operations.
+IP Address can be a IPv4, or IPv6 or hostname
+.TP
+.BR \--help
+Prints the help for this program
+.SH BUGS
+There are no bugs on me! (of course there are..)
+.TP
+No other operations than +,-,*,/ are working but the system is ready to be upgraded to solve other operations for example modulo, etc.
+.TP
+Right now, FP operation are not supported.
+.TP
+No other known bugs are present.
