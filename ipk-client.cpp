@@ -31,12 +31,12 @@ bool logging = false; // specifies whether the programs logs to console or not
  */
 string getCurrDate() {
 
-	char mbstr[100];
+	char multiByteString[100];
 	string dateTime;
 
 	time_t t = time(NULL);
-	if (strftime(mbstr, sizeof(mbstr), "%T", localtime(&t))) {
-		dateTime = mbstr;
+	if (strftime(multiByteString, sizeof(multiByteString), "%T", localtime(&t))) {
+		dateTime = multiByteString;
 	} else {
 		cout << ("Error: Date could not be resolved.") << endl;
 	}
@@ -62,9 +62,9 @@ void logConsole(string msg, bool std) {
 }
 
 /*
- * Function prints a error message on cerr and exits program
+ * Function prints a error message on stderr and exits program
  *
- * @param const char *message message to be printed to cerr
+ * @param const char *message message to be printed to stderr
  */
 void throwException(const char *message) {
 	logConsole(message, true);
@@ -76,7 +76,7 @@ void throwException(const char *message) {
  *
  */
 void printHelp() {
-	cout << endl << "Developer: Dominik Skala (xskala11)" << endl;
+	cout << endl << "Developer: Dominik Skála (xskala11)" << endl;
 	cout << "Task name: IPK2 - math operations solving client" << endl;
 	cout << "Subject: IPK (2016/2017)" << endl << endl << endl;
 	cout << "Math operations solving client can be only used in cooperation with server, that is sending clients their math operations, which all clients solve and send results back." << endl << endl << endl;
@@ -92,7 +92,7 @@ void printHelp() {
  *
  * @param string String which is searched
  * @param string delimiter which is used to split the String
- * @param bool way - true is substr to the right, false is to the left
+ * @param bool way - true is substring to the right, false is to the left
  */
 string returnSubstring(string String, string delimiter, bool way){
 
@@ -222,10 +222,7 @@ bool checkOperand(string operand) {
  * @return true if operator is in range, false otherwise
  */
 bool checkOperator(string op) {
-	if (op != "+" && op != "-" && op != "*" && op != "/") {
-		return false;
-	}
-	return true;
+	return !(op != "+" && op != "-" && op != "*" && op != "/");
 }
 
 /*
@@ -235,9 +232,7 @@ bool checkOperator(string op) {
  * @return false if division is actual operation and 0 is a divisor, otherwise true is returned
  */
 bool checkMathValidity(string *arr) {
-	if (arr[1] == "/" && convertStringToNumber(arr[2]) == 0)
-		return false; // we are now just checking for zero
-	return true;
+	return !(arr[1] == "/" && convertStringToNumber(arr[2]) == 0); // we are now just checking for zero
 }
 
 /*
@@ -326,16 +321,16 @@ int main(int argc, char *argv[]) {
 
 	int ip = 0;
 
-	struct sockaddr_in serveraddr;
-	struct sockaddr_in6 serveraddr6;
+	struct sockaddr_in serverAddress;
+	struct sockaddr_in6 serverAddress6;
 	if (res->ai_family == AF_INET) {
-		serveraddr = *(struct sockaddr_in *) res->ai_addr;
-		serveraddr.sin_port = htons(port);
+		serverAddress = *(struct sockaddr_in *) res->ai_addr;
+		serverAddress.sin_port = htons(port);
 		ip = 4;
 	} else if (res->ai_family == AF_INET6) {
-		serveraddr6.sin6_family = (short)res->ai_family;
-		inet_pton(AF_INET6, argv[1], &serveraddr6.sin6_addr.s6_addr);
-		serveraddr6.sin6_port = htons(port);
+		serverAddress6.sin6_family = (short)res->ai_family;
+		inet_pton(AF_INET6, argv[1], &serverAddress6.sin6_addr.s6_addr);
+		serverAddress6.sin6_port = htons(port);
 		ip = 6;
 	} else {
 		throwException("Error: Unknown format of IP address.");
@@ -348,14 +343,14 @@ int main(int argc, char *argv[]) {
 		if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) <= 0) {
 			throwException("Error: Could not open client socket.");
 		}
-		if ((connect(client_socket, (struct sockaddr *) &serveraddr, sizeof(serveraddr))) < 0) {
+		if ((connect(client_socket, (struct sockaddr *) &serverAddress, sizeof(serverAddress))) < 0) {
 			throwException("Error: Couldn't connect to server.");
 		}
 	} else if (ip == 6){
-		if ((client_socket = socket(serveraddr6.sin6_family, SOCK_STREAM, 0)) <= 0) {
+		if ((client_socket = socket(serverAddress6.sin6_family, SOCK_STREAM, 0)) <= 0) {
 			throwException("Error: Could not open client socket.");
 		}
-		if ((connect(client_socket, (struct sockaddr *) &serveraddr6, sizeof(serveraddr6))) < 0) {
+		if ((connect(client_socket, (struct sockaddr *) &serverAddress6, sizeof(serverAddress6))) < 0) {
 			throwException("Error: Couldn't connect to server.");
 		}
 	} else {
