@@ -36,6 +36,11 @@ void throwException(const char *message) {
 	exit(EXIT_FAILURE);
 }
 
+
+/*
+ * Function prints help message after argument --help is passed to program
+ *
+ */
 void printHelp() {
 	cout << endl << "Developer: Dominik Skala (xskala11)" << endl;
 	cout << "Task name: IPK2 - math operations solving client" << endl;
@@ -48,6 +53,10 @@ void printHelp() {
 	exit(0);
 }
 
+/*
+ * Function returns current time, it is only used for logging
+ *
+ */
 string getCurrDate() {
 
 	char mbstr[100];
@@ -84,11 +93,25 @@ string returnSubstring(string String, string delimiter, bool way){
 	return subString;
 }
 
+/*
+ * Function returns command that is in message, if no command was specified, return ""
+ *
+ * @param string msg Message resolved from server
+ * @return string command
+ */
 string getCmd(string msg) {
 	return returnSubstring(returnSubstring(msg, "\n", false), " ", false);
 }
 
-int getOp(string cmd) {
+
+/*
+ * Function returns code of operation which is going to be done. There are 3 operation codes = 0 - error, 1 - bye operation, 2 - solve operation.
+ * Type of operation depends on the command in message
+ *
+ * @param string cmd Command that is in the message sent from server
+ * @return int code
+ */
+int getOperation(string cmd) {
 
 	int code = 0;
 	if (cmd == "BYE") {
@@ -99,16 +122,22 @@ int getOp(string cmd) {
 	return code;
 }
 
-int parseBye(string message) {
+/*
+ * parseBye function parses the bye message sent by server, if the format is correct, function returns true, otherwise returns false
+ */
+bool parseBye(string message) {
 
 	string hash;
-	if ((hash = returnSubstring(returnSubstring(message, "\n", false), " ", true)) == "") {
-		return 0;
-	} else {
-		return 1;
-	}
+	return !(returnSubstring(returnSubstring(message, "\n", false), " ", true) == "");
 }
 
+
+/*
+ * Function parses the message from solve operation into string array
+ *
+ * @param string message This message is going to be parsed into array
+ * @return string *arr Array of operations and operator
+ */
 string *parseMessage(string message) {
 	
 	string parsed = returnSubstring(returnSubstring(message, "\n", false), " ", true); // math op with two operands - operand operator operand
@@ -125,11 +154,23 @@ string *parseMessage(string message) {
 }
 
 
-long long int convertStringToInt(string operand) {
+/*
+ * Function converts string to long long int
+ *
+ * @param string operand number in string type
+ * @return long long int number
+ */
+long long int convertStringToNumber(string operand) {
 	return (strtoll(operand.c_str(), NULL, 10));
 }
 
 
+/*
+ * This function checks for message validity, it should be only called before parseMessage function!
+ *
+ * @params string message message that is going to be validated
+ * @return true if message is ok, false if otherwise
+ */
 bool checkMessageValidity(string message) {
 
 	string parsed = returnSubstring(returnSubstring(message, "\n", false), " ", true); // math op with two operands - operand operator operand
@@ -139,6 +180,12 @@ bool checkMessageValidity(string message) {
 	return !(returnSubstring(parsed, " ", true) == "");
 }
 
+/*
+ * checkOperand function takes an operand, converts it to long long int and checks for validity, it must be called before conversion to number!
+ *
+ * @param string operand operand that is being checked
+ * @return bool true if operand is ok, false if something wrong with the operand
+ */
 bool checkOperand(string operand) {
 
 	char *pEnd;
@@ -154,6 +201,12 @@ bool checkOperand(string operand) {
 	return true;
 }
 
+/*
+ * checkOperator function checks if the operator given in message from server is in range [+,-,*,/]
+ *
+ * @param string op operator that is being checked
+ * @return true if operator is in range, false otherwise
+ */
 bool checkOperator(string op) {
 	if (op != "+" && op != "-" && op != "*" && op != "/") {
 		return false;
@@ -161,17 +214,39 @@ bool checkOperator(string op) {
 	return true;
 }
 
+/*
+ * Function takes all functions checking operands and operator and combines them in a single return value
+ *
+ * @param string *arr array containing parsed message
+ * @return true if all operators and operand are correct, otherwise false is returned
+ */
 bool checkAll(string *arr) {
 	return (checkOperand(arr[0]) && checkOperand(arr[2]) && checkOperator(arr[1]));
 }
 
+
+/*
+ * Function currently checks only if the second number is not 0 (just for division)
+ *
+ * @param array of strings that were given from server and parsed into array
+ * @return false if division is actual operation and 0 is a divisor, otherwise true is returned
+ */
 long long int checkMathValidity(string *arr) {
-	return convertStringToInt(arr[2]);
+	if (arr[1] == "/" && !convertStringToNumber(arr[2]))
+		return false; // we are now just checking for zero
+	return true;
 }
 
+
+/*
+ * Function takes all operators and operands and solves the equation, after that returns the result
+ *
+ * @param array of operator and operands
+ * @return long long int result of equation
+ */
 long long int getResult(string *arr) {
-	long long int operand1 = convertStringToInt(arr[0].c_str());
-	long long int operand2 = convertStringToInt(arr[2].c_str());
+	long long int operand1 = convertStringToNumber(arr[0].c_str());
+	long long int operand2 = convertStringToNumber(arr[2].c_str());
 	long long int result = 0;
 	
 	if (arr[1] == "+") {
@@ -186,6 +261,11 @@ long long int getResult(string *arr) {
 	return result;
 }
 
+/*
+ * generateHello creates a request message for server with HELLO and xskala11 md5 hash
+ *
+ * @return request message in format HELLO hash\n
+ */
 string generateHello() {
 	string msg;
 	// todo hashing, current state is temporary
@@ -194,7 +274,16 @@ string generateHello() {
 	return msg = "HELLO "+hash+"\n";
 }
 
-string generateResult(long long int result) {
+/*
+ * Function generates response message for the server
+ *
+ * @param long long int result number for result
+ * @param bool error if this param is true, error result is returned
+ * @return string response for the server in format RESULT NUM\n or RESULT ERROR\n if error flag is true
+ */
+string generateResult(long long int result, bool error) {
+	if (error)
+		return "RESULT ERROR\n";
 	return "RESULT "+to_string(result)+"\n";
 }
 
@@ -275,7 +364,7 @@ int main(int argc, char *argv[]) {
 			string msg(request);
 			memset(&request, '\0', sizeof(request));
 			int op;
-			if ((op = (getOp(getCmd(msg)))) == 1) {
+			if ((op = (getOperation(getCmd(msg)))) == 1) {
 				cout << getCurrDate()+": "+returnSubstring(returnSubstring(msg, "\n", false), " ", true) << endl;
 				// bye
 				if (!parseBye(msg)) {
@@ -290,19 +379,19 @@ int main(int argc, char *argv[]) {
 				if (checkMessageValidity(msg)) {
 					continue;
 				}
-				string error = "RESULT ERROR\n";
 				string *arr = parseMessage(msg);
+				long long int rst = 0;
 				if (!checkAll(arr)) {
-					cout << getCurrDate()+": Math operation result: "+error;
-					send(client_socket, error.c_str(), 1024, 0);
+					cout << getCurrDate()+": Math operation result: "+generateResult(rst, true);
+					send(client_socket, generateResult(rst, true).c_str(), 1024, 0);
 				} else {
 					if (!checkMathValidity(arr)) {
-						cout << getCurrDate()+": Math operation result: "+error;
-						send(client_socket, error.c_str(), 1024, 0);
+						cout << getCurrDate()+": Math operation result: "+generateResult(rst, true);
+						send(client_socket, generateResult(rst, true).c_str(), 1024, 0);
 					} else {
-						long long int rst = getResult(arr);
-						cout << getCurrDate()+": Math operation result: "+generateResult(rst);
-						send(client_socket, generateResult(rst).c_str(), 1024, 0);
+						rst = getResult(arr);
+						cout << getCurrDate()+": Math operation result: "+generateResult(rst, false);
+						send(client_socket, generateResult(rst, false).c_str(), 1024, 0);
 					}
 				}
 
