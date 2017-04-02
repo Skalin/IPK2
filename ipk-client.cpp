@@ -3,6 +3,7 @@
 #include <cstring>
 #include <string>
 #include <unistd.h>
+#include <limits.h>
 #ifdef _WIN32
 #include <Winsock2.h>
 	#include <ws2tcpip.h>
@@ -23,6 +24,8 @@ using namespace std;
 const string login = "xskala11";
 
 
+
+
 /*
  * Function prints a error message on cerr and exits program
  *
@@ -31,6 +34,33 @@ const string login = "xskala11";
 void throwException(const char *message) {
 	cerr << (message) << endl;
 	exit(EXIT_FAILURE);
+}
+
+void printHelp() {
+	cout << endl << "Developer: Dominik Skala (xskala11)" << endl;
+	cout << "Task name: IPK2 - math operations solving client" << endl;
+	cout << "Subject: IPK (2016/2017)" << endl << endl << endl;
+	cout << "Math operations solving client can be only used in cooperation with server, that is sending clients their math operations, which all clients solve and send results back." << endl << endl << endl;
+	cout << "Usage: ipk-client IP" << endl;
+	cout << "Arguments:" << endl;
+	cout << "  IP\t\t\tSpecifies the IP of the math server in format of IPv4, IPv6 or Hostname. This server should ALWAYS run on port 55555 (connection to this server is forced)" << endl;
+	cout << "  --help\t\tCan be used only when no other arguments are passed. Prints this help message." << endl;
+	exit(0);
+}
+
+string getCurrDate() {
+
+	char mbstr[100];
+	string dateTime;
+
+	time_t t = time(NULL);
+	if (strftime(mbstr, sizeof(mbstr), "%T", localtime(&t))) {
+		dateTime = mbstr;
+	} else {
+		cout << ("Error: Date could not be resolved.") << endl;
+	}
+
+	return dateTime;
 }
 
 /*
@@ -66,8 +96,6 @@ int getOp(string cmd) {
 	} else if (cmd == "SOLVE") {
 		code = 2;
 	}
-
-	cout << code << endl;
 	return code;
 }
 
@@ -77,7 +105,6 @@ int parseBye(string message) {
 	if ((hash = returnSubstring(returnSubstring(message, "\n", false), " ", true)) == "") {
 		return 0;
 	} else {
-		cout << hash << endl;
 		return 1;
 	}
 }
@@ -108,17 +135,34 @@ string *parseMessage(string message) {
 	return arr;	
 }
 
-int convertStringToInt() {
 
-	int number = 0;
-
-	return number;
+long long int convertStringToInt(string operand) {
+	return (strtoll(operand.c_str(), NULL, 10));
 }
 
-int getResult(string *arr) {
-	int operand1 = atoi(arr[0].c_str());
-	int operand2 = atoi(arr[2].c_str());
-	int result = 0;
+bool checkOperand(string operand) {
+
+	char *pEnd;
+	long long int op;
+	if ((op = strtoll(operand.c_str(), &pEnd, 10)) == LONG_LONG_MIN) {
+		return false;
+	} else if (op == LONG_LONG_MAX) {
+		return false;
+	} else if (operand == pEnd) {
+		return false;
+	}
+
+	return true;
+}
+
+long long int checkMathValidity(string *arr) {
+	return convertStringToInt(arr[2]);
+}
+
+long long int getResult(string *arr) {
+	long long int operand1 = convertStringToInt(arr[0].c_str());
+	long long int operand2 = convertStringToInt(arr[2].c_str());
+	long long int result = 0;
 	
 	if (arr[1] == "+") {
 		result = operand1 + operand2;
@@ -140,18 +184,18 @@ string generateHello() {
 	return msg = "HELLO "+hash+"\n";
 }
 
-char *generateResult(long long int result) {
-
-	string strResponse = "RESULT "+to_string(result)+"\n";
-	char *response;
-	strcpy(response, strResponse.c_str());
-	return response;
+string generateResult(long long int result) {
+	return "RESULT "+to_string(result)+"\n";
 }
 
 int main(int argc, char *argv[]) {
 
 	if (argc != 2) {
-				throwException("Error: Wrong amount of arguments.");
+		throwException("Error: Wrong amount of arguments.");
+	}
+
+	if (strcmp(argv[1], "--help") == 0) {
+		printHelp();
 	}
 
 	// port was defined in the task assignment
@@ -211,17 +255,15 @@ int main(int argc, char *argv[]) {
 
 	string message = generateHello();
 	send(client_socket, message.c_str(), message.size(), 0);
-	cout << message << endl;
-
-	cout << "something client_socket send is happening" << endl;
+	cout << getCurrDate()+": Sending request to the server on IP: "+argv[1] << endl;
 	char request[1024];
 	memset(&request, '\0', sizeof(request));
 	int rcv;
 	for (;;) {
 		if ((rcv = recv(client_socket, request, 1024, 0)) > 0) {
+			cout << getCurrDate()+": Server responded and receiving math operation." << endl;
 			string msg(request);
-			cout << "received message" << endl;
-			cout << msg;
+			cout << getCurrDate()+": Solving: "+msg;
 			memset(&request, '\0', sizeof(request));
 			int op;
 			if ((op = (getOp(getCmd(msg)))) == 1) {
@@ -238,18 +280,22 @@ int main(int argc, char *argv[]) {
 				if (checkMessageValidity(msg)) {
 					continue;
 				}
-
+				string error = "RESULT ERROR\n";
 				string *arr = parseMessage(msg);
-
-				long long int rst = getResult(arr);
-				// conv int to string
-				char *response = generateResult(rst);
-				printf("%s", response);
-				if (strchr(response, '\n')) {
-					cout << "\\n je pritomno" << endl;
+				if ((!checkOperand(arr[0])) || !checkOperand(arr[2])) {
+					cout << getCurrDate()+": Math operation result: "+error;
+					send(client_socket, error.c_str(), 1024, 0);
+				} else {
+					if (!checkMathValidity(arr)) {
+						cout << getCurrDate()+": Math operation result: "+error;
+						send(client_socket, error.c_str(), 1024, 0);
+					} else {
+						long long int rst = getResult(arr);
+						cout << getCurrDate()+": Math operation result: "+generateResult(rst);
+						send(client_socket, generateResult(rst).c_str(), 1024, 0);
+					}
 				}
-				send(client_socket, response, 20, 0);
-				memset(&response, '\0', sizeof(response));
+
 			} else {
 				// we did receive something that shouldn't be received, program will now try to read another message from server (probably wrong memory access, or corrupted memory block)
 				continue;

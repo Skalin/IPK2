@@ -20,7 +20,7 @@
 
 | Parametr | Popis |
 |:-----:| :-----:|
-| IP | IP adresa ve formátu IPv4 nebo IPv6, hostname není podporována |
+| IP | IP adresa ve formátu IPv4, IPv6 nebo hostname |
 
 ##### **PŘÍKLAD KOMUNIKACE**
 
@@ -31,6 +31,6 @@
 
 
 ##### **CHYBY**
-* Aktuální verze aplikace neumí zajistit připojení přes hostname
+* Aktuálně neumí klient řešit Floating point operace
 * Hash loginu je forcovaný pro xskala11, není generován
 * Není dopsána funkce chechMessageValidity()
