@@ -1,8 +1,8 @@
 all:	ipk-client.cpp clean
-	g++ -std=c++0x ipk-client.cpp -o ipk-client
+	g++ -std=c++0x ipk-client.cpp -Wall -Werror -o ipk-client
 
 ipk-client: ipk-client.cpp
-	g++ -std=c++0x ipk-client.cpp -o ipk-client
+	g++ -std=c++0x ipk-client.cpp -Wall -Werror -o ipk-client
 
 clean:
 	rm -rf ipk-client
