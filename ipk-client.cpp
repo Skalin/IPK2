@@ -232,7 +232,7 @@ int main(int argc, char *argv[]) {
 
 	freeaddrinfo(res);
 
-	int client_socket;
+	unsigned int client_socket;
 	if (ip == 4) {
 		if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) <= 0) {
 			throwException("Error: Could not open client socket.");
