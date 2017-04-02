@@ -209,7 +209,7 @@ int main(int argc, char *argv[]) {
 
 	int ret;
 	memset(&hint, '\0', sizeof hint);
-	if (ret = getaddrinfo(argv[1], NULL, &hint, &res)) {
+	if ((ret = getaddrinfo(argv[1], NULL, &hint, &res)) != 0) {
 		throwException("Error: Invalid IP address.");
 	}
 
