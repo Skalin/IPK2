@@ -66,6 +66,8 @@ int getOp(string cmd) {
 	} else if (cmd == "SOLVE") {
 		code = 2;
 	}
+
+	cout << code << endl;
 	return code;
 }
 
@@ -85,11 +87,7 @@ int checkMessageValidity(string message) {
 	string parsed = returnSubstring(returnSubstring(message, "\n", false), " ", true); // math op with two operands - operand operator operand
 	parsed = returnSubstring(parsed, " ", true); // operator operand
 	parsed = returnSubstring(parsed, " ", true); // operand
-	if (returnSubstring(parsed, " ", true) == "") {
-		return 0;
-	} else {
-		return 1;
-	}
+	return returnSubstring(parsed, " ", true) == "" ? 0 : 1;
 	
 	
 	// todo osetreni chybovych stavu
@@ -134,12 +132,20 @@ int getResult(string *arr) {
 	return result;
 }
 
-string createHello() {
+string generateHello() {
 	string msg;
 	// todo hashing, current state is temporary
 	string hash = "f92f0527f211c422c36e9970bc2be3be";
 
-	return msg = "HELLO "+hash;
+	return msg = "HELLO "+hash+"\n";
+}
+
+char *generateResult(long long int result) {
+
+	string strResponse = "RESULT "+to_string(result)+"\n";
+	char *response;
+	strcpy(response, strResponse.c_str());
+	return response;
 }
 
 int main(int argc, char *argv[]) {
@@ -168,9 +174,8 @@ int main(int argc, char *argv[]) {
 	struct sockaddr_in serveraddr;
 	struct sockaddr_in6 serveraddr6;
 	if (res->ai_family == AF_INET) {
+		serveraddr = *(struct sockaddr_in *) res->ai_addr;
 		serveraddr.sin_port = htons(port);
-		serveraddr.sin_family = (short)res->ai_family;
-		serveraddr.sin_addr.s_addr = inet_addr(argv[1]);
 		ip = 4;
 	} else if (res->ai_family == AF_INET6) {
 		serveraddr6.sin6_family = (short)res->ai_family;
@@ -184,33 +189,40 @@ int main(int argc, char *argv[]) {
 	freeaddrinfo(res);
 
 	int client_socket;
-	if (res->ai_family == AF_INET) {
-		if ((client_socket = socket(serveraddr.sin_family, SOCK_STREAM, 0)) < 0) {
+	if (ip == 4) {
+		if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) <= 0) {
 			throwException("Error: Could not open client socket.");
 		}
 
 		if ((connect(client_socket, (struct sockaddr *) &serveraddr, sizeof(serveraddr))) < 0) {
 			throwException("Error: Couldn't connect to server.");
 		}
-	} else {
-		if ((client_socket = socket(serveraddr6.sin6_family, SOCK_STREAM, 0)) < 0) {
+	} else if (ip == 6){
+		if ((client_socket = socket(serveraddr6.sin6_family, SOCK_STREAM, 0)) <= 0) {
 			throwException("Error: Could not open client socket.");
 		}
 
 		if ((connect(client_socket, (struct sockaddr *) &serveraddr6, sizeof(serveraddr6))) < 0) {
 			throwException("Error: Couldn't connect to server.");
 		}
+	} else {
+		throwException("Error: Non recognizable IP.");
 	}
 
-	string message = createHello();
-
+	string message = generateHello();
 	send(client_socket, message.c_str(), message.size(), 0);
+	cout << message << endl;
 
-	char response[1024];
+	cout << "something client_socket send is happening" << endl;
+	char request[1024];
+	memset(&request, '\0', sizeof(request));
 	int rcv;
 	for (;;) {
-		if ((rcv = recv(client_socket, response, 1024, 0)) > 0) {
-			string msg(response);
+		if ((rcv = recv(client_socket, request, 1024, 0)) > 0) {
+			string msg(request);
+			cout << "received message" << endl;
+			cout << msg;
+			memset(&request, '\0', sizeof(request));
 			int op;
 			if ((op = (getOp(getCmd(msg)))) == 1) {
 				// bye
@@ -223,25 +235,29 @@ int main(int argc, char *argv[]) {
 				}
 			} else if (op == 2) {
 				// solve
-				if (!checkMessageValidity(message)) {
+				if (checkMessageValidity(msg)) {
 					continue;
 				}
 
-				string *arr = parseMessage(message);
-				int rst = getResult(arr);
+				string *arr = parseMessage(msg);
+
+				long long int rst = getResult(arr);
 				// conv int to string
-				stringstream ss;
-				ss << rst;
-				string result = ss.str();
-				send(client_socket, result.c_str(), result.size(), 0);
+				char *response = generateResult(rst);
+				printf("%s", response);
+				if (strchr(response, '\n')) {
+					cout << "\\n je pritomno" << endl;
+				}
+				send(client_socket, response, 20, 0);
+				memset(&response, '\0', sizeof(response));
 			} else {
 				// we did receive something that shouldn't be received, program will now try to read another message from server (probably wrong memory access, or corrupted memory block)
 				continue;
 			}
+		} else if (rcv == 0) {
+			cout << "Info: Server transmission end.\n";
+			break;
 		} else {
-			if (rcv == 0) {
-				break;
-			}
 			throwException("Error: Couldn't read data from server correctly.");
 		}
 	}

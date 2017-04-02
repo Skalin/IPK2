@@ -14,5 +14,5 @@ server, asks for math operations and sends back results
 Set the IP Address of the server that should be used for communication for receiving mathetmatical operations. IP Address can be a IPv4, or IPv6
 .SH BUGS
 There are no bugs on me! (of course there are..)
-At the moment, server can't be resolved by hostname (probably in newer release)
 No other operations than +,-,*,/ are working but the system is ready to be upgraded to solve other operations for example modulo, etc.
+Right now, FP operations and ERROR result is not sent
