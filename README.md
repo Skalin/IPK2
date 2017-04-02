@@ -23,7 +23,7 @@
 | Argument | Popis |
 |:-----:| :-----:|
 | IP | IP adresa ve formátu IPv4, IPv6 nebo hostname |
-| ----help| nápověda programu pro lepší pochopení jeho fungování|
+| - -help| nápověda programu pro lepší pochopení jeho fungování|
 
 ##### **PŘÍKLAD KOMUNIKACE**
 
