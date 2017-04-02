@@ -393,7 +393,6 @@ int main(int argc, char *argv[]) {
 						send(client_socket, generateResult(rst, false).c_str(), 1024, 0);
 					}
 				}
-
 			} else {
 				// we did receive something that shouldn't be received, program will now try to read another message from server (probably wrong memory access, or corrupted memory block)
 				continue;
