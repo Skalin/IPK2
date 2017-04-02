@@ -1,8 +1,8 @@
 all:	 clean ipk-client clean-obj
 
 ipk-client: ipk-client.cpp
-	g++ -std=c++0x -c ipk-client.cpp
-	g++ -std=c++0x ipk-client.o -o ipk-client
+	g++ -std=c++0x -Wall -Werror -c ipk-client.cpp
+	g++ -std=c++0x -Wall -Werror ipk-client.o -o ipk-client
 
 clean-obj:
 	rm -rf *.o
