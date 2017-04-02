@@ -26,32 +26,6 @@ bool logging = false; // specifies whether the programs logs to console or not
 
 
 /*
- * Function prints a error message on cerr and exits program
- *
- * @param const char *message message to be printed to cerr
- */
-void throwException(const char *message) {
-	cerr << (message) << endl;
-	exit(EXIT_FAILURE);
-}
-
-/*
- * Function prints help message after argument --help is passed to program
- *
- */
-void printHelp() {
-	cout << endl << "Developer: Dominik Skala (xskala11)" << endl;
-	cout << "Task name: IPK2 - math operations solving client" << endl;
-	cout << "Subject: IPK (2016/2017)" << endl << endl << endl;
-	cout << "Math operations solving client can be only used in cooperation with server, that is sending clients their math operations, which all clients solve and send results back." << endl << endl << endl;
-	cout << "Usage: ipk-client IP" << endl;
-	cout << "Arguments:" << endl;
-	cout << "  IP\t\t\tSpecifies the IP of the math server in format of IPv4, IPv6 or Hostname. This server should ALWAYS run on port 55555 (connection to this server is forced)" << endl;
-	cout << "  --help\t\tCan be used only when no other arguments are passed. Prints this help message." << endl;
-	exit(0);
-}
-
-/*
  * Function returns current time, it is only used for logging
  *
  */
@@ -70,11 +44,47 @@ string getCurrDate() {
 	return dateTime;
 }
 
-
-void logConsole(string msg) {
-	if (logging) {
-		cout << getCurrDate()+msg;
+/*
+ * Function logs everything to console (stdout or stderr), where precisely does it print depends on bool std, which switches between stdout and stderr
+ * 			normal logging is depending on whether global variable for logging is active or not
+ *
+ * @param string msg msg to be printed
+ * @param bool std value switching between stdout and stderr, if std is file, we print to stderr, otherwise we are printing to stdout
+ */
+void logConsole(string msg, bool std) {
+	if (std) {
+		cerr << msg << endl;
+	} else {
+		if (logging) {
+			cout << getCurrDate()+msg;
+		}
 	}
+}
+
+/*
+ * Function prints a error message on cerr and exits program
+ *
+ * @param const char *message message to be printed to cerr
+ */
+void throwException(const char *message) {
+	logConsole(message, true);
+	exit(EXIT_FAILURE);
+}
+
+/*
+ * Function prints help message after argument --help is passed to program
+ *
+ */
+void printHelp() {
+	cout << endl << "Developer: Dominik Skala (xskala11)" << endl;
+	cout << "Task name: IPK2 - math operations solving client" << endl;
+	cout << "Subject: IPK (2016/2017)" << endl << endl << endl;
+	cout << "Math operations solving client can be only used in cooperation with server, that is sending clients their math operations, which all clients solve and send results back." << endl << endl << endl;
+	cout << "Usage: ipk-client IP" << endl;
+	cout << "Arguments:" << endl;
+	cout << "  IP\t\t\tSpecifies the IP of the math server in format of IPv4, IPv6 or Hostname. This server should ALWAYS run on port 55555 (connection to this server is forced)" << endl;
+	cout << "  --help\t\tCan be used only when no other arguments are passed. Prints this help message." << endl;
+	exit(0);
 }
 
 /*
@@ -338,7 +348,6 @@ int main(int argc, char *argv[]) {
 		if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) <= 0) {
 			throwException("Error: Could not open client socket.");
 		}
-
 		if ((connect(client_socket, (struct sockaddr *) &serveraddr, sizeof(serveraddr))) < 0) {
 			throwException("Error: Couldn't connect to server.");
 		}
@@ -346,7 +355,6 @@ int main(int argc, char *argv[]) {
 		if ((client_socket = socket(serveraddr6.sin6_family, SOCK_STREAM, 0)) <= 0) {
 			throwException("Error: Could not open client socket.");
 		}
-
 		if ((connect(client_socket, (struct sockaddr *) &serveraddr6, sizeof(serveraddr6))) < 0) {
 			throwException("Error: Couldn't connect to server.");
 		}
@@ -356,51 +364,49 @@ int main(int argc, char *argv[]) {
 
 	string message = generateHello();
 	send(client_socket, message.c_str(), message.size(), 0);
-	logConsole(": Sending request to the server on IP: "+(string) argv[1] + "\n");
+	logConsole(": Sending request to the server on IP: "+(string) argv[1] + "\n", false);
 	char request[1024];
 	memset(&request, '\0', sizeof(request));
 	int rcv;
 	for (;;) {
 		if ((rcv = recv(client_socket, request, 1024, 0)) > 0) {
-			logConsole(": Server responded and receiving math operation.\n");
+			logConsole(": Server responded and receiving math operation.\n", false);
 			string msg(request);
 			memset(&request, '\0', sizeof(request));
 			int op;
 			if ((op = (getOperation(getCmd(msg)))) == 1) {
-				logging = true;
-				logConsole(": "+returnSubstring(returnSubstring(msg, "\n", false), " ", true) + "\n");
-				logging = false;
 				// bye
 				if (!parseBye(msg)) {
 					// if bye msg is not ok, we will continue for new iteration of the cycle
 					continue;
 				} else {
 					// if bye message format is ok, break to close socket
+					logging = true;
+					logConsole(": "+returnSubstring(returnSubstring(msg, "\n", false), " ", true) + "\n", false);
+					logging = false;
 					break;
 				}
 			} else if (op == 2) {
-				logConsole(": Solving: "+msg);
+				logConsole(": Solving: "+msg, false);
 				if (checkMessageValidity(msg)) {
 					continue;
 				}
 				string *arr = parseMessage(msg);
 				long long int rst = 0;
 				if (!checkAll(arr)) {
-					logConsole(": Math operation result: "+generateResult(rst, true));
+					logConsole(": Math operation result: "+generateResult(rst, true), false);
 					send(client_socket, generateResult(rst, true).c_str(), 1024, 0);
 				} else {
-
 						rst = getResult(arr);
-						logConsole(": Math operation result: "+generateResult(rst, false));
+						logConsole(": Math operation result: "+generateResult(rst, false), false);
 						send(client_socket, generateResult(rst, false).c_str(), 1024, 0);
-
 				}
 			} else {
 				// we did receive something that shouldn't be received, program will now try to read another message from server (probably wrong memory access, or corrupted memory block)
 				continue;
 			}
 		} else if (rcv == 0) {
-			cout << "Info: Server transmission end.\n";
+			logConsole("Server transmission end. No more equations will be coming.\n", false);
 			break;
 		} else {
 			throwException("Error: Couldn't read data from server correctly.");
