@@ -15,6 +15,8 @@ Client can solve any operation from range +,-,*,/. It can solve them with number
 .TP
 .BR \ip
 Set the IP Address of the server that should be used for communication for receiving mathetmatical operations. IP Address can be a IPv4, or IPv6 or hostname
+.BR \--help
+Prints the help for this program
 .SH BUGS
 There are no bugs on me! (of course there are..)
 No other operations than +,-,*,/ are working but the system is ready to be upgraded to solve other operations for example modulo, etc.
