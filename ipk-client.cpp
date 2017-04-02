@@ -22,8 +22,7 @@ using namespace std;
 
 // login const to be hashed
 const string login = "xskala11";
-
-
+bool logging = false; // specifies whether the programs logs to console or not
 
 
 /*
@@ -35,7 +34,6 @@ void throwException(const char *message) {
 	cerr << (message) << endl;
 	exit(EXIT_FAILURE);
 }
-
 
 /*
  * Function prints help message after argument --help is passed to program
@@ -70,6 +68,13 @@ string getCurrDate() {
 	}
 
 	return dateTime;
+}
+
+
+void logConsole(string msg) {
+	if (logging) {
+		cout << getCurrDate()+msg;
+	}
 }
 
 /*
@@ -214,17 +219,6 @@ bool checkOperator(string op) {
 }
 
 /*
- * Function takes all functions checking operands and operator and combines them in a single return value
- *
- * @param string *arr array containing parsed message
- * @return true if all operators and operand are correct, otherwise false is returned
- */
-bool checkAll(string *arr) {
-	return (checkOperand(arr[0]) && checkOperand(arr[2]) && checkOperator(arr[1]));
-}
-
-
-/*
  * Function currently checks only if the second number is not 0 (just for division)
  *
  * @param array of strings that were given from server and parsed into array
@@ -236,6 +230,15 @@ bool checkMathValidity(string *arr) {
 	return true;
 }
 
+/*
+ * Function takes all functions checking operands and operator and combines them in a single return value
+ *
+ * @param string *arr array containing parsed message
+ * @return true if all operators and operand are correct, otherwise false is returned
+ */
+bool checkAll(string *arr) {
+	return (checkOperand(arr[0]) && checkOperand(arr[2]) && checkOperator(arr[1]) && checkMathValidity(arr));
+}
 
 /*
  * Function takes all operators and operands and solves the equation, after that returns the result
@@ -353,18 +356,20 @@ int main(int argc, char *argv[]) {
 
 	string message = generateHello();
 	send(client_socket, message.c_str(), message.size(), 0);
-	cout << getCurrDate()+": Sending request to the server on IP: "+argv[1] << endl;
+	logConsole(": Sending request to the server on IP: "+(string) argv[1] + "\n");
 	char request[1024];
 	memset(&request, '\0', sizeof(request));
 	int rcv;
 	for (;;) {
 		if ((rcv = recv(client_socket, request, 1024, 0)) > 0) {
-			cout << getCurrDate()+": Server responded and receiving math operation." << endl;
+			logConsole(": Server responded and receiving math operation.\n");
 			string msg(request);
 			memset(&request, '\0', sizeof(request));
 			int op;
 			if ((op = (getOperation(getCmd(msg)))) == 1) {
-				cout << getCurrDate()+": "+returnSubstring(returnSubstring(msg, "\n", false), " ", true) << endl;
+				logging = true;
+				logConsole(": "+returnSubstring(returnSubstring(msg, "\n", false), " ", true) + "\n");
+				logging = false;
 				// bye
 				if (!parseBye(msg)) {
 					// if bye msg is not ok, we will continue for new iteration of the cycle
@@ -374,24 +379,21 @@ int main(int argc, char *argv[]) {
 					break;
 				}
 			} else if (op == 2) {
-				cout << getCurrDate()+": Solving: "+msg;
+				logConsole(": Solving: "+msg);
 				if (checkMessageValidity(msg)) {
 					continue;
 				}
 				string *arr = parseMessage(msg);
 				long long int rst = 0;
 				if (!checkAll(arr)) {
-					cout << getCurrDate()+": Math operation result: "+generateResult(rst, true);
+					logConsole(": Math operation result: "+generateResult(rst, true));
 					send(client_socket, generateResult(rst, true).c_str(), 1024, 0);
 				} else {
-					if (!checkMathValidity(arr)) {
-						cout << getCurrDate()+": Math operation result: "+generateResult(rst, true);
-						send(client_socket, generateResult(rst, true).c_str(), 1024, 0);
-					} else {
+
 						rst = getResult(arr);
-						cout << getCurrDate()+": Math operation result: "+generateResult(rst, false);
+						logConsole(": Math operation result: "+generateResult(rst, false));
 						send(client_socket, generateResult(rst, false).c_str(), 1024, 0);
-					}
+
 				}
 			} else {
 				// we did receive something that shouldn't be received, program will now try to read another message from server (probably wrong memory access, or corrupted memory block)
