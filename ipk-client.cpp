@@ -129,6 +129,16 @@ long long int convertStringToInt(string operand) {
 	return (strtoll(operand.c_str(), NULL, 10));
 }
 
+
+bool checkMessageValidity(string message) {
+
+	string parsed = returnSubstring(returnSubstring(message, "\n", false), " ", true); // math op with two operands - operand operator operand
+	parsed = returnSubstring(parsed, " ", true); // operator operand
+	parsed = returnSubstring(parsed, " ", true); // operand
+
+	return !(returnSubstring(parsed, " ", true) == "");
+}
+
 bool checkOperand(string operand) {
 
 	char *pEnd;
@@ -144,24 +154,15 @@ bool checkOperand(string operand) {
 	return true;
 }
 
-
-
-
-bool checkMessageValidity(string message) {
-
-	string parsed = returnSubstring(returnSubstring(message, "\n", false), " ", true); // math op with two operands - operand operator operand
-	parsed = returnSubstring(parsed, " ", true); // operator operand
-	parsed = returnSubstring(parsed, " ", true); // operand
-
-	return !(returnSubstring(parsed, " ", true) == "");
-
-}
-
 bool checkOperator(string op) {
 	if (op != "+" && op != "-" && op != "*" && op != "/") {
 		return false;
 	}
 	return true;
+}
+
+bool checkAll(string *arr) {
+	return (checkOperand(arr[0]) && checkOperand(arr[2]) && checkOperator(arr[1]));
 }
 
 long long int checkMathValidity(string *arr) {
@@ -291,7 +292,7 @@ int main(int argc, char *argv[]) {
 				}
 				string error = "RESULT ERROR\n";
 				string *arr = parseMessage(msg);
-				if ((!checkOperand(arr[0])) || !checkOperand(arr[2]) || !checkOperator(arr[1])) {
+				if (!checkAll(arr)) {
 					cout << getCurrDate()+": Math operation result: "+error;
 					send(client_socket, error.c_str(), 1024, 0);
 				} else {
