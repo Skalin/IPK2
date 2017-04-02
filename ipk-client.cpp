@@ -153,7 +153,6 @@ string *parseMessage(string message) {
 	return arr;	
 }
 
-
 /*
  * Function converts string to long long int
  *
@@ -231,8 +230,8 @@ bool checkAll(string *arr) {
  * @param array of strings that were given from server and parsed into array
  * @return false if division is actual operation and 0 is a divisor, otherwise true is returned
  */
-long long int checkMathValidity(string *arr) {
-	if (arr[1] == "/" && !convertStringToNumber(arr[2]))
+bool checkMathValidity(string *arr) {
+	if (arr[1] == "/" && convertStringToNumber(arr[2]) == 0)
 		return false; // we are now just checking for zero
 	return true;
 }
