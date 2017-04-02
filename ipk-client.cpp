@@ -109,17 +109,6 @@ int parseBye(string message) {
 	}
 }
 
-int checkMessageValidity(string message) {
-	
-	string parsed = returnSubstring(returnSubstring(message, "\n", false), " ", true); // math op with two operands - operand operator operand
-	parsed = returnSubstring(parsed, " ", true); // operator operand
-	parsed = returnSubstring(parsed, " ", true); // operand
-	return returnSubstring(parsed, " ", true) == "" ? 0 : 1;
-	
-	
-	// todo osetreni chybovych stavu
-}
-
 string *parseMessage(string message) {
 	
 	string parsed = returnSubstring(returnSubstring(message, "\n", false), " ", true); // math op with two operands - operand operator operand
@@ -152,6 +141,26 @@ bool checkOperand(string operand) {
 		return false;
 	}
 
+	return true;
+}
+
+
+
+
+bool checkMessageValidity(string message) {
+
+	string parsed = returnSubstring(returnSubstring(message, "\n", false), " ", true); // math op with two operands - operand operator operand
+	parsed = returnSubstring(parsed, " ", true); // operator operand
+	parsed = returnSubstring(parsed, " ", true); // operand
+
+	return !(returnSubstring(parsed, " ", true) == "");
+
+}
+
+bool checkOperator(string op) {
+	if (op != "+" && op != "-" && op != "*" && op != "/") {
+		return false;
+	}
 	return true;
 }
 
@@ -263,10 +272,10 @@ int main(int argc, char *argv[]) {
 		if ((rcv = recv(client_socket, request, 1024, 0)) > 0) {
 			cout << getCurrDate()+": Server responded and receiving math operation." << endl;
 			string msg(request);
-			cout << getCurrDate()+": Solving: "+msg;
 			memset(&request, '\0', sizeof(request));
 			int op;
 			if ((op = (getOp(getCmd(msg)))) == 1) {
+				cout << getCurrDate()+": "+returnSubstring(returnSubstring(msg, "\n", false), " ", true) << endl;
 				// bye
 				if (!parseBye(msg)) {
 					// if bye msg is not ok, we will continue for new iteration of the cycle
@@ -276,13 +285,13 @@ int main(int argc, char *argv[]) {
 					break;
 				}
 			} else if (op == 2) {
-				// solve
+				cout << getCurrDate()+": Solving: "+msg;
 				if (checkMessageValidity(msg)) {
 					continue;
 				}
 				string error = "RESULT ERROR\n";
 				string *arr = parseMessage(msg);
-				if ((!checkOperand(arr[0])) || !checkOperand(arr[2])) {
+				if ((!checkOperand(arr[0])) || !checkOperand(arr[2]) || !checkOperator(arr[1])) {
 					cout << getCurrDate()+": Math operation result: "+error;
 					send(client_socket, error.c_str(), 1024, 0);
 				} else {
