@@ -3,6 +3,7 @@
 //
 
 #include "ipk-client-functions.h"
+#include "md5/md5.h"
 
 #ifndef IPK2_IPK_CLIENT_H
 #define IPK2_IPK_CLIENT_H
@@ -157,14 +158,12 @@ long long int getResult(string *arr) {
 string generateHello() {
 	string msg;
 	// todo hashing, current state is temporary
-	string hash = "f92f0527f211c422c36e9970bc2be3be";
+	string hash = md5(login);
 
 	return msg = "HELLO "+hash+"\n";
 }
 
 string generateResult(long long int result, bool error) {
-	if (error)
-		return "RESULT ERROR\n";
-	return "RESULT "+std::to_string(result)+"\n";
+	return (error ? "RESULT ERROR\n" : "RESULT "+std::to_string(result)+"\n");
 }
 #endif //IPK2_IPK_CLIENT_H
