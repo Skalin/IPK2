@@ -112,7 +112,33 @@ bool checkMessageValidity(string message) {
 	return !(returnSubstring(parsed, " ", true) == "");
 }
 
+bool checkArr(string operand) {
+
+	char *str = new char[operand.length()];
+	strcpy(str, operand.c_str());
+
+	for (unsigned int i = 0; i < strlen(str); i++) {
+		if (i == 0) {
+			if ((str[i] != '+' && str[i] != '-') && (str[i] < 48 && str[i] > 57)) {
+				return false;
+			}
+		} else {
+			if (str[i] < 48 || str[i] > 57) {
+				return false;
+			}
+		}
+	}
+
+	memset(&str, '\0', sizeof str);
+	return true;
+
+}
+
 bool checkOperand(string operand) {
+
+	if (!checkArr(operand)) {
+		return false;
+	}
 
 	char *pEnd;
 	long long int op;

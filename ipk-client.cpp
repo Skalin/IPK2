@@ -1,4 +1,4 @@
-	#include "include/ipk-client-functions.cpp"
+#include "include/ipk-client-functions.cpp"
 
 int main(int argc, char *argv[]) {
 	bool logging = false;
@@ -103,16 +103,16 @@ int main(int argc, char *argv[]) {
 					logConsole(logging, ": Math operation result: "+generateResult(rst, true), false);
 					send(client_socket, generateResult(rst, true).c_str(), 1024, 0);
 				} else {
-						rst = getResult(arr);
-						logConsole(logging, ": Math operation result: "+generateResult(rst, false), false);
-						send(client_socket, generateResult(rst, false).c_str(), 1024, 0);
+					rst = getResult(arr);
+					logConsole(logging, ": Math operation result: "+generateResult(rst, false), false);
+					send(client_socket, generateResult(rst, false).c_str(), 1024, 0);
 				}
 			} else {
 				// we did receive something that shouldn't be received, program will now try to read another message from server (probably wrong memory access, or corrupted memory block)
 				continue;
 			}
 		} else if (rcv == 0) {
-			logConsole(logging, "Server transmission end. No more equations will be coming.\n", false);
+			logConsole(logging, ": Server transmission end. Probably unexpected EOF.\n", false);
 			break;
 		} else {
 			throwException("Error: Couldn't read data from server correctly.");
