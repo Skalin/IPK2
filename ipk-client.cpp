@@ -1,14 +1,22 @@
-#include "include/ipk-client-functions.cpp"
+	#include "include/ipk-client-functions.cpp"
 
 int main(int argc, char *argv[]) {
-
-	if (argc != 2) {
+	bool logging = false;
+	if (argc != 2 && argc != 3) {
 		throwException("Error: Wrong amount of arguments.");
+	} else if (argc == 3) {
+		if (strcmp(argv[2], "--logging=true") == 0) {
+			logging = true;
+		} else if (strcmp(argv[2], "--logging=false") == 0) {
+			logging = false;
+		} else {
+			throwException("Error: Wrong amount of arguments.");
+		}
+	} else {
+		if (!strcmp(argv[1],"--help"))
+			printHelp();
 	}
-
-	if (strcmp(argv[1], "--help") == 0) {
-		printHelp();
-	}
+	
 
 	// port was defined in the task assignment
 	unsigned short port = 55555;
@@ -25,34 +33,28 @@ int main(int argc, char *argv[]) {
 		throwException("Error: Invalid IP address.");
 	}
 
-	int ip = 0;
-
 	struct sockaddr_in serverAddress;
 	struct sockaddr_in6 serverAddress6;
 	if (res->ai_family == AF_INET) {
 		serverAddress = *(struct sockaddr_in *) res->ai_addr;
 		serverAddress.sin_port = htons(port);
-		ip = 4;
 	} else if (res->ai_family == AF_INET6) {
 		serverAddress6.sin6_family = (short)res->ai_family;
 		inet_pton(AF_INET6, argv[1], &serverAddress6.sin6_addr.s6_addr);
 		serverAddress6.sin6_port = htons(port);
-		ip = 6;
 	} else {
 		throwException("Error: Unknown format of IP address.");
 	}
 
-	freeaddrinfo(res);
-
 	unsigned int client_socket;
-	if (ip == 4) {
+	if (res->ai_family == AF_INET) {
 		if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) <= 0) {
 			throwException("Error: Could not open client socket.");
 		}
 		if ((connect(client_socket, (struct sockaddr *) &serverAddress, sizeof(serverAddress))) < 0) {
 			throwException("Error: Couldn't connect to server.");
 		}
-	} else if (ip == 6){
+	} else if (res->ai_family == AF_INET6){
 		if ((client_socket = socket(serverAddress6.sin6_family, SOCK_STREAM, 0)) <= 0) {
 			throwException("Error: Could not open client socket.");
 		}
@@ -63,15 +65,18 @@ int main(int argc, char *argv[]) {
 		throwException("Error: Non recognizable IP.");
 	}
 
+	freeaddrinfo(res);
+
 	string message = generateHello();
 	send(client_socket, message.c_str(), message.size(), 0);
-	logConsole(": Sending request to the server on IP: "+(string) argv[1] + "\n", false);
+	logConsole(logging, ": Sending request to the server on IP: "+(string) argv[1] + "\n", false);
+	logConsole(logging, ": "+generateHello(), false);
 	char request[1024];
 	memset(&request, '\0', sizeof(request));
 	int rcv;
 	for (;;) {
 		if ((rcv = recv(client_socket, request, 1024, 0)) > 0) {
-			logConsole(": Server responded and receiving math operation.\n", false);
+			logConsole(logging, ": Server responded and receiving math operation.\n", false);
 			string msg(request);
 			memset(&request, '\0', sizeof(request));
 			int op;
@@ -83,23 +88,23 @@ int main(int argc, char *argv[]) {
 				} else {
 					// if bye message format is ok, break to close socket
 					logging = true;
-					logConsole(": "+returnSubstring(returnSubstring(msg, "\n", false), " ", true) + "\n", false);
+					logConsole(logging, ": "+returnSubstring(returnSubstring(msg, "\n", false), " ", true) + "\n", false);
 					logging = false;
 					break;
 				}
 			} else if (op == 2) {
-				logConsole(": Solving: "+msg, false);
+				logConsole(logging, ": Solving: "+msg, false);
 				if (checkMessageValidity(msg)) {
 					continue;
 				}
 				string *arr = parseMessage(msg);
 				long long int rst = 0;
 				if (!checkAll(arr)) {
-					logConsole(": Math operation result: "+generateResult(rst, true), false);
+					logConsole(logging, ": Math operation result: "+generateResult(rst, true), false);
 					send(client_socket, generateResult(rst, true).c_str(), 1024, 0);
 				} else {
 						rst = getResult(arr);
-						logConsole(": Math operation result: "+generateResult(rst, false), false);
+						logConsole(logging, ": Math operation result: "+generateResult(rst, false), false);
 						send(client_socket, generateResult(rst, false).c_str(), 1024, 0);
 				}
 			} else {
@@ -107,7 +112,7 @@ int main(int argc, char *argv[]) {
 				continue;
 			}
 		} else if (rcv == 0) {
-			logConsole("Server transmission end. No more equations will be coming.\n", false);
+			logConsole(logging, "Server transmission end. No more equations will be coming.\n", false);
 			break;
 		} else {
 			throwException("Error: Couldn't read data from server correctly.");

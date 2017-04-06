@@ -29,7 +29,7 @@ using namespace std;
 
 // login const to be hashed
 const string login = "xskala11";
-bool logging = false; // specifies whether the programs logs to console or not
+bool logging = true; // specifies whether the programs logs to console or not
 
 /*
  * Function returns current time, it is only used for logging
@@ -44,7 +44,7 @@ string getCurrDate();
  * @param string msg msg to be printed
  * @param bool std value switching between stdout and stderr, if std is file, we print to stderr, otherwise we are printing to stdout
  */
-void logConsole(string msg, bool std);
+void logConsole(bool logging, string msg, bool std);
 
 /*
  * Function prints a error message on stderr and exits program
