@@ -41,10 +41,12 @@ string getCurrDate();
  * Function logs everything to console (stdout or stderr), where precisely does it print depends on bool std, which switches between stdout and stderr
  * 			normal logging is depending on whether global variable for logging is active or not
  *
+ * @param bool logging specifies whether to log to console or not
+ * @param bool date specifies whether we will print date before every log message
  * @param string msg msg to be printed
  * @param bool std value switching between stdout and stderr, if std is file, we print to stderr, otherwise we are printing to stdout
  */
-void logConsole(bool logging, string msg, bool std);
+void logConsole(bool logging, bool date, string msg, bool std);
 
 /*
  * Function prints a error message on stderr and exits program
@@ -154,7 +156,7 @@ bool checkAll(string *arr);
  * @param array of operator and operands
  * @return long long int result of equation
  */
-long long int getResult(string *arr);
+double getResult(string *arr);
 
 /*
  * generateHello creates a request message for server with HELLO and xskala11 md5 hash
@@ -170,5 +172,5 @@ string generateHello();
  * @param bool error if this param is true, error result is returned
  * @return string response for the server in format RESULT NUM\n or RESULT ERROR\n if error flag is true
  */
-string generateResult(long long int result, bool error);
+string generateResult(double result, bool error);
 #endif //IPK2_IPK_CLIENT_FUNCTIONS_H

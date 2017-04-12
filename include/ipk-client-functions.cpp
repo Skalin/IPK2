@@ -2,6 +2,7 @@
 // Created by Dominik on 02.04.2017.
 //
 
+#include <iomanip>
 #include "ipk-client-functions.h"
 #include "md5/md5.cpp"
 
@@ -24,18 +25,22 @@ string getCurrDate() {
 	return dateTime;
 }
 
-void logConsole(bool logging, string msg, bool std) {
+void logConsole(bool logging, bool date, string msg, bool std) {
 	if (std) {
 		cerr << msg << endl;
 	} else {
 		if (logging) {
-			cout << getCurrDate()+msg;
+			if (date) {
+				cout << getCurrDate()+": "+msg;
+			} else {
+				cout << msg;
+			}
 		}
 	}
 }
 
-void throwException(const char *message) {
-	logConsole(true, message, true);
+void throwException(const char *message, bool date) {
+	logConsole(true, date, message, true);
 	exit(EXIT_FAILURE);
 }
 
@@ -161,14 +166,50 @@ bool checkMathValidity(string *arr) {
 	return !(arr[1] == "/" && convertStringToNumber(arr[2]) == 0); // we are now just checking for zero
 }
 
-bool checkAll(string *arr) {
-	return (checkOperand(arr[0]) && checkOperand(arr[2]) && checkOperator(arr[1]) && checkMathValidity(arr));
-}
-
-long long int getResult(string *arr) {
+bool checkResultOverflow(string *arr) {
 	long long int operand1 = convertStringToNumber(arr[0].c_str());
 	long long int operand2 = convertStringToNumber(arr[2].c_str());
-	long long int result = 0;
+
+	if (arr[1] == "+") {
+		if ((operand1 > LONG_LONG_MAX/2-1 && operand2 > LONG_LONG_MAX-operand1) || (operand2 > LONG_LONG_MAX/2-1 && operand1 > LONG_LONG_MAX - operand2)) {
+			return false;
+		}
+	} else if (arr[1] == "*") {
+/*
+		//overflow
+		if ((operand1 > LONG_LONG_MAX/2 -1 && operand2 >= 2) || (operand1 >= 2 && operand2 > LONG_LONG_MAX/2-1)) {
+			return false;
+		}
+
+		// overflow
+		if ((operand1 < LONG_LONG_MIN/2-1 && operand2 <= -2) || (operand1 <= -2 && operand2 < LONG_LONG_MIN/2-1)) {
+			return false;
+		}
+
+		// underflow
+		if ((operand1 < LONG_LONG_MIN/2-1 && operand2 >= 2) || (operand1 >= 2 && operand2 > LONG_LONG_MIN/2-1)) {
+			return false;
+		}
+
+		if ((operand1 > LONG_LONG_MAX/2-1 && operand2 <= -2) || (operand1 <= -2 && operand2 > LONG_LONG_MAX/2-1)) {
+			return false;
+		}*/
+	}
+
+
+
+	return true;
+
+}
+
+bool checkAll(string *arr) {
+	return (checkOperand(arr[0]) && checkOperand(arr[2]) && checkOperator(arr[1]) && checkMathValidity(arr) && checkResultOverflow(arr));
+}
+
+double getResult(string *arr) {
+	long long int operand1 = convertStringToNumber(arr[0].c_str());
+	long long int operand2 = convertStringToNumber(arr[2].c_str());
+	double result = 0.0;
 
 	if (arr[1] == "+") {
 		result = operand1 + operand2;
@@ -177,8 +218,11 @@ long long int getResult(string *arr) {
 	} else if (arr[1] == "*") {
 		result = operand1 * operand2;
 	} else if (arr[1] == "/") {
-		result = operand1 / operand2;
+		result = operand1 / (double) operand2;
 	}
+
+
+
 	return result;
 }
 
@@ -186,7 +230,13 @@ string generateHello() {
 	return "HELLO "+md5(login)+"\n";
 }
 
-string generateResult(long long int result, bool error) {
-	return (error ? "RESULT ERROR\n" : "RESULT "+std::to_string(result)+"\n");
+string generateResult(double result, bool error) {
+	ostringstream rst;
+	rst << fixed;
+	rst << setprecision(3);
+	rst << result;
+	string substring = rst.str();
+
+	return (error ? "RESULT ERROR\n" : "RESULT "+substring.substr(0,substring.find(".")+3)+"\n");
 }
 #endif //IPK2_IPK_CLIENT_H
