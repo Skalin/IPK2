@@ -69,9 +69,9 @@ int main(int argc, char *argv[]) {
 	freeaddrinfo(res);
 
 	string message = generateHello();
-	int snd;
+	int sent;
 
-	if ((snd = send(client_socket, message.c_str(), message.size(), 0)) < 0) {
+	if ((sent = send(client_socket, message.c_str(), message.size(), 0)) < 0) {
 		throwException("Error: Could not send HELLO hash\\n", date);
 	}
 	logConsole(logging, date, "Sending request to the server on IP: "+(string) argv[1] + "\n", false);
@@ -107,13 +107,13 @@ int main(int argc, char *argv[]) {
 				// if all operands and operator are not correct, we will return ERROR otherwise, we will return the actual result of equation
 				if (!checkAll(arr)) {
 					logConsole(logging, date, "Math operation result: "+generateResult(rst, true), false);
-					if ((snd = send(client_socket, generateResult(rst, true).c_str(), 1024, 0)) < 0) {
+					if ((sent = send(client_socket, generateResult(rst, true).c_str(), 1024, 0)) < 0) {
 						throwException("Error: Could not send math operation result.", date);
 					}
 				} else {
 					rst = getResult(arr);
 					logConsole(logging, date, "Math operation result: "+generateResult(rst, false), false);
-					if ((snd = send(client_socket, generateResult(rst, false).c_str(), 1024, 0)) < 0) {
+					if ((sent = send(client_socket, generateResult(rst, false).c_str(), 1024, 0)) < 0) {
 						throwException("Error: Could not send math operation result.", date);
 					}
 				}
