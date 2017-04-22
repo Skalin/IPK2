@@ -3,15 +3,74 @@
 int main(int argc, char *argv[]) {
 	bool logging = false;
 	bool date = false;
-	if (argc != 2 && argc != 3) {
+	string login = "xskala11";
+	if (argc < 2 && argc > 5) {
 		throwException("Error: Wrong amount of arguments.", date);
 	} else if (argc == 3) {
-		if (strcmp(argv[2], "--logging=true") == 0) {
+		string arg = argv[2];
+		if (arg == "--logging=true") {
 			logging = true;
-		} else if (strcmp(argv[2], "--logging=false") == 0) {
-			logging = false;
+		} else if (arg == "--date=true") {
+			date = true;
+		} else if (arg.find("--login=") != string::npos) {
+			login = arg.substr(8);
 		} else {
 			throwException("Error: Wrong amount of arguments.", date);
+		}
+	} else if (argc == 4) {
+		string arg = argv[2];
+		string arg1 = argv[3];
+		if (arg == "--logging=true" || arg1 == "--logging=true") {
+			if (arg == arg1) {
+				throwException("Error: Wrong amount of arguments.", date);
+			}
+			logging = true;
+		}
+		if (arg.find("--login=") != string::npos || arg1.find("--login=") != string::npos) {
+			if (arg.find("--login=") != string::npos && arg1.find("--login") != string::npos) {
+				throwException("Error: Wrong amount of arguments.", date);
+			}
+			if (arg.find("--login=") != string::npos)
+				login = arg.substr(8);
+			if (arg1.find("--login=") != string::npos)
+				login = arg1.substr(8);
+		}
+		if (arg == "--date=true" || arg1 == "--date=true") {
+			if (arg == arg1) {
+				throwException("Error: Wrong amount of arguments.", date);
+			}
+			date = true;
+		}
+	} else if (argc == 5) {
+		string arg = argv[2];
+		string arg1 = argv[3];
+		string arg2 = argv[4];
+
+		if (arg == "--logging=true" || arg1 == "--logging=true" || arg2 == "--loging=true") {
+			if (arg == arg1 || arg == arg2 || arg1 == arg2) {
+				throwException("Error: Wrong amount of arguments.", date);
+			}
+			logging = true;
+		}
+
+		if (arg.find("--login=") != string::npos || arg1.find("--login=") != string::npos || arg2.find("--login=")) {
+			if ((arg.find("--login=") != string::npos && arg1.find("--login") != string::npos) || (arg.find("--login=") != string::npos && arg2.find("--login") != string::npos) || (arg1.find("--login=") != string::npos && arg2.find("--login") != string::npos)) {
+				throwException("Error: Wrong amount of arguments.", date);
+			}
+
+			if (arg.find("--login=") != string::npos)
+				login = arg.substr(8);
+			if (arg1.find("--login=") != string::npos)
+				login = arg1.substr(8);
+			if (arg2.find("--login=") != string::npos)
+				login = arg2.substr(8);
+		}
+
+		if (arg == "--date=true" || arg1 == "--date=true" || arg2 == "--date=true") {
+			if (arg == arg1 || arg == arg2 || arg1 == arg2) {
+				throwException("Error: Wrong amount of arguments.", date);
+			}
+			date = true;
 		}
 	} else {
 		if (!strcmp(argv[1],"--help"))
@@ -68,14 +127,14 @@ int main(int argc, char *argv[]) {
 
 	freeaddrinfo(res);
 
-	string message = generateHello();
+	string message = generateHello(login);
 	int sent;
 
 	if ((sent = send(client_socket, message.c_str(), message.size(), 0)) < 0) {
 		throwException("Error: Could not send HELLO hash\\n", date);
 	}
 	logConsole(logging, date, "Sending request to the server on IP: "+(string) argv[1] + "\n", false);
-	logConsole(logging, date, generateHello(), false);
+	logConsole(logging, date, generateHello(login), false);
 	char request[1024];
 	memset(&request, '\0', sizeof(request));
 	int rcv;
@@ -93,7 +152,7 @@ int main(int argc, char *argv[]) {
 				} else {
 					// if bye message format is ok, we will print secret and then we will break to close the socket
 					logging = true;
-					logConsole(logging, date, returnSubstring(returnSubstring(msg, "\n", false), " ", true) + "\n", false);
+					logConsole(true, date, returnSubstring(returnSubstring(msg, "\n", false), " ", true) + "\n", false);
 					logging = false;
 					break;
 				}
