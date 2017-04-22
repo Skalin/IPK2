@@ -27,9 +27,6 @@
 
 using namespace std;
 
-// login const to be hashed
-const string login = "xskala11";
-
 /*
  * Function returns current time, it is only used for logging
  *
@@ -163,7 +160,7 @@ double getResult(string *arr);
  *
  * @return request message in format HELLO hash\n
  */
-string generateHello();
+string generateHello(string login);
 
 /*
  * Function generates response message for the server
