@@ -179,7 +179,7 @@ bool checkResultOverflow(string *arr) {
 			return false;
 		}
 	} else if (arr[1] == "*") {
-
+/*
 		//overflow
 		if ((operand1 > LONG_LONG_MAX/2 -1 && operand2 >= 2) || (operand1 >= 2 && operand2 > LONG_LONG_MAX/2-1)) {
 			return false;
@@ -198,6 +198,7 @@ bool checkResultOverflow(string *arr) {
 		if ((operand1 > LONG_LONG_MAX/2-1 && operand2 <= -2) || (operand1 <= -2 && operand2 > LONG_LONG_MAX/2-1)) {
 			return false;
 		}
+		*/
 	}
 
 
@@ -230,7 +231,7 @@ double getResult(string *arr) {
 	return result;
 }
 
-string generateHello() {
+string generateHello(string login) {
 	return "HELLO "+md5(login)+"\n";
 }
 
