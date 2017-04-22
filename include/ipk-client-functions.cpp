@@ -27,7 +27,11 @@ string getCurrDate() {
 
 void logConsole(bool logging, bool date, string msg, bool std) {
 	if (std) {
-		cerr << msg << endl;
+		if (date) {
+			cerr << getCurrDate()+": "+msg << endl;
+		} else {
+			cerr << msg << endl;
+		}
 	} else {
 		if (logging) {
 			if (date) {
@@ -175,7 +179,7 @@ bool checkResultOverflow(string *arr) {
 			return false;
 		}
 	} else if (arr[1] == "*") {
-/*
+
 		//overflow
 		if ((operand1 > LONG_LONG_MAX/2 -1 && operand2 >= 2) || (operand1 >= 2 && operand2 > LONG_LONG_MAX/2-1)) {
 			return false;
@@ -193,7 +197,7 @@ bool checkResultOverflow(string *arr) {
 
 		if ((operand1 > LONG_LONG_MAX/2-1 && operand2 <= -2) || (operand1 <= -2 && operand2 > LONG_LONG_MAX/2-1)) {
 			return false;
-		}*/
+		}
 	}
 
 
@@ -233,7 +237,7 @@ string generateHello() {
 string generateResult(double result, bool error) {
 	ostringstream rst;
 	rst << fixed;
-	rst << setprecision(3);
+	rst << setprecision(10);
 	rst << result;
 	string substring = rst.str();
 

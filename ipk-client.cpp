@@ -80,8 +80,8 @@ int main(int argc, char *argv[]) {
 	memset(&request, '\0', sizeof(request));
 	int rcv;
 	for (;;) {
-		if ((rcv = recv(client_socket, request, 1024, 0)) > 0) {
-			logConsole(logging, date, "Server responded and receiving math operation.\n", false);
+		if ((rcv = recv(client_socket, request, sizeof(request), 0)) > 0) {
+			logConsole(logging, date, "Server responded and receiving request.\n", false);
 			string msg(request);
 			memset(&request, '\0', sizeof(request));
 			int op;
@@ -107,13 +107,13 @@ int main(int argc, char *argv[]) {
 				// if all operands and operator are not correct, we will return ERROR otherwise, we will return the actual result of equation
 				if (!checkAll(arr)) {
 					logConsole(logging, date, "Math operation result: "+generateResult(rst, true), false);
-					if ((sent = send(client_socket, generateResult(rst, true).c_str(), 1024, 0)) < 0) {
+					if ((sent = send(client_socket, generateResult(rst, true).c_str(), generateResult(rst, true).size(), 0)) < 0) {
 						throwException("Error: Could not send math operation result.", date);
 					}
 				} else {
 					rst = getResult(arr);
 					logConsole(logging, date, "Math operation result: "+generateResult(rst, false), false);
-					if ((sent = send(client_socket, generateResult(rst, false).c_str(), 1024, 0)) < 0) {
+					if ((sent = send(client_socket, generateResult(rst, false).c_str(), generateResult(rst, false).size(), 0)) < 0) {
 						throwException("Error: Could not send math operation result.", date);
 					}
 				}
