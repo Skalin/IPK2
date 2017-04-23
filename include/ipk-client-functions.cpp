@@ -60,6 +60,188 @@ void printHelp() {
 	exit(0);
 }
 
+void checkArguments(int argc, char *argv[], bool *log, bool *date, string *login) {
+
+	if (argc < 2 && argc > 5) {
+		throwException("Error: Wrong amount of arguments. Use --help.", *date);
+	} else if (argc == 3) {
+		string arg = argv[2];
+		if (arg.find("--logging=") != string::npos) {
+			if (arg.substr(10) == "true") {
+				*log = true;
+			} else if (arg.substr(10) == "false") {
+				*log = false;
+			} else {
+				throwException("Error: Wrong logging argument usage. Use --help.", *date);
+			}
+		} else if (arg.find("--login=") != string::npos) {
+			*login = arg.substr(8);
+		} else if (arg.find("--date=") != string::npos) {
+			if (arg.substr(7) == "true") {
+				*date = true;
+			} else if (arg.substr(7) == "false") {
+				*date = false;
+			} else {
+				throwException("Error: Wrong date argument usage. Use --help.",*date);
+			}
+		} else {
+			throwException("Error: Wrong amount of arguments. Use --help.", *date);
+		}
+	} else if (argc == 4) {
+		string arg = argv[2];
+		string arg1 = argv[3];
+		if (arg.find("--logging=") != string::npos || arg1.find("--logging=") != string::npos) {
+			if (arg.find("--logging=") != string::npos && arg1.find("--logging=") != string::npos) {
+				throwException("Error: Wrong amount of arguments. Use --help.", *date);
+			} else {
+				if (arg.find("--logging=") != string::npos) {
+					if (arg.substr(10) == "true") {
+						*log = true;
+					} else if (arg.substr(10) == "false") {
+						*log = false;
+					} else {
+						throwException("Error: Wrong logging argument usage. Use --help.", *date);
+					}
+				} else if (arg1.find("--logging=") != string::npos) {
+					if (arg1.substr(10) == "true") {
+						*log = true;
+					} else if (arg1.substr(10) == "false") {
+						*log = false;
+					} else {
+						throwException("Error: Wrong logging argument usage. Use --help.", *date);
+					}
+				} else {
+					throwException("Error: Wrong amount of arguments. Use --help.", *date);
+				}
+			}
+		}
+		if (arg.find("--login=") != string::npos || arg1.find("--login=") != string::npos) {
+			if (arg.find("--login=") != string::npos && arg1.find("--login") != string::npos) {
+				throwException("Error: Wrong amount of arguments. Use --help.", *date);
+			}
+			if (arg.find("--login=") != string::npos)
+				*login = arg.substr(8);
+			if (arg1.find("--login=") != string::npos)
+				*login = arg1.substr(8);
+		}
+		if (arg.find("--date=") != string::npos || arg1.find("--date=") != string::npos) {
+			if (arg.find("--date=") != string::npos && arg1.find("--date=") != string::npos) {
+				throwException("Error: Wrong amount of arguments. Use --help.", *date);
+			} else {
+				if (arg.find("--date=") != string::npos) {
+					if (arg.substr(7) == "true") {
+						*date = true;
+					} else if (arg.substr(7) == "false") {
+						*date = false;
+					} else {
+						throwException("Error: Wrong date argument usage. Use --help.", *date);
+					}
+				} else if (arg1.find("--date=") != string::npos) {
+					if (arg1.substr(7) == "true") {
+						*date = true;
+					} else if (arg1.substr(7) == "false") {
+						*date = false;
+					} else {
+						throwException("Error: Wrong date argument usage. Use --help.", *date);
+					}
+				} else {
+					throwException("Error: Wrong amount of arguments. Use --help.", *date);
+				}
+			}
+
+		}
+	} else if (argc == 5) {
+		string arg = argv[2];
+		string arg1 = argv[3];
+		string arg2 = argv[4];
+
+		if (arg.find("--logging=") != string::npos  || arg1.find("--logging=") != string::npos  || arg2.find("--logging=") != string::npos ) {
+			if ((arg.find("--logging=") != string::npos && arg1.find("--logging=") != string::npos) || (arg.find("--logging=") != string::npos && arg2.find("--logging=") != string::npos) || (arg1.find("--logging=") != string::npos && arg2.find("--logging=") != string::npos)) {
+				throwException("Error: Wrong amount of arguments. Use --help.", *date);
+			} else {
+				if (arg.find("--logging=") != string::npos) {
+					if (arg.substr(10) == "true") {
+						*log = true;
+					} else if (arg.substr(10) == "false") {
+						*log = false;
+					} else {
+						throwException("Error: Wrong logging argument usage. Use --help.", *date);
+					}
+				} else if (arg1.find("--logging=") != string::npos) {
+					if (arg1.substr(10) == "true") {
+						*log = true;
+					} else if (arg1.substr(10) == "false") {
+						*log = false;
+					} else {
+						throwException("Error: Wrong logging argument usage. Use --help.", *date);
+					}
+				} else if (arg2.find("--logging=") != string::npos) {
+					if (arg2.substr(10) == "true") {
+						*log = true;
+					} else if (arg2.substr(10) == "false") {
+						*log = false;
+					} else {
+						throwException("Error: Wrong logging argument usage. Use --help.", *date);
+					}
+				} else {
+					throwException("Error: Wrong amount of arguments. Use --help.", *date);
+				}
+			}
+		}
+
+		if (arg.find("--login=") != string::npos || arg1.find("--login=") != string::npos || arg2.find("--login=") != string::npos) {
+			if ((arg.find("--login=") != string::npos && arg1.find("--login") != string::npos) || (arg.find("--login=") != string::npos && arg2.find("--login") != string::npos) || (arg1.find("--login=") != string::npos && arg2.find("--login") != string::npos)) {
+				throwException("Error: Wrong amount of arguments. Use --help.", *date);
+			} else {
+				if (arg.find("--login=") != string::npos) {
+					*login = arg.substr(8);
+				} else if (arg1.find("--login=") != string::npos) {
+					*login = arg1.substr(8);
+				} else if (arg2.find("--login=") != string::npos) {
+					*login = arg2.substr(8);
+				}
+			}
+		}
+
+		if (arg.find("--date=") != string::npos || arg1.find("--date=") != string::npos || arg2.find("--date=") != string::npos) {
+			if ((arg.find("--date=") != string::npos && arg1.find("--date=") != string::npos) || (arg.find("--date=") != string::npos && arg2.find("--date=") != string::npos) || (arg1.find("--date=") != string::npos && arg2.find("--date=") != string::npos)) {
+				throwException("Error: Wrong amount of arguments. Use --help.", *date);
+			} else {
+				if (arg.find("--date=") != string::npos) {
+					if (arg.substr(7) == "true") {
+						*date = true;
+					} else if (arg.substr(7) == "false") {
+						*date = false;
+					} else {
+						throwException("Error: Wrong date argument usage. Use --help.", *date);
+					}
+				} else if (arg1.find("--date=") != string::npos) {
+					if (arg1.substr(7) == "true") {
+						*date = true;
+					} else if (arg1.substr(7) == "false") {
+						*date = false;
+					} else {
+						throwException("Error: Wrong date argument usage. Use --help.", *date);
+					}
+				} else if (arg2.find("--date=") != string::npos) {
+					if (arg2.substr(7) == "true") {
+						*date = true;
+					} else if (arg2.substr(7) == "false") {
+						*date = false;
+					} else {
+						throwException("Error: Wrong date argument usage. Use --help.", *date);
+					}
+				} else {
+					throwException("Error: Wrong amount of arguments. Use --help.", *date);
+				}
+			}
+		}
+	} else {
+		if (!strcmp(argv[1],"--help"))
+			printHelp();
+	}
+}
+
 string returnSubstring(string String, string delimiter, bool way){
 
 	string subString = "";

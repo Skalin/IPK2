@@ -1,82 +1,13 @@
 #include "include/ipk-client-functions.cpp"
 
 int main(int argc, char *argv[]) {
+	// default values to run the program, they are rechecked and modified in checkArguments function
 	bool logging = false;
 	bool date = false;
 	string login = "xskala11";
-	if (argc < 2 && argc > 5) {
-		throwException("Error: Wrong amount of arguments.", date);
-	} else if (argc == 3) {
-		string arg = argv[2];
-		if (arg == "--logging=true") {
-			logging = true;
-		} else if (arg == "--date=true") {
-			date = true;
-		} else if (arg.find("--login=") != string::npos) {
-			login = arg.substr(8);
-		} else {
-			throwException("Error: Wrong amount of arguments.", date);
-		}
-	} else if (argc == 4) {
-		string arg = argv[2];
-		string arg1 = argv[3];
-		if (arg == "--logging=true" || arg1 == "--logging=true") {
-			if (arg == arg1) {
-				throwException("Error: Wrong amount of arguments.", date);
-			}
-			logging = true;
-		}
-		if (arg.find("--login=") != string::npos || arg1.find("--login=") != string::npos) {
-			if (arg.find("--login=") != string::npos && arg1.find("--login") != string::npos) {
-				throwException("Error: Wrong amount of arguments.", date);
-			}
-			if (arg.find("--login=") != string::npos)
-				login = arg.substr(8);
-			if (arg1.find("--login=") != string::npos)
-				login = arg1.substr(8);
-		}
-		if (arg == "--date=true" || arg1 == "--date=true") {
-			if (arg == arg1) {
-				throwException("Error: Wrong amount of arguments.", date);
-			}
-			date = true;
-		}
-	} else if (argc == 5) {
-		string arg = argv[2];
-		string arg1 = argv[3];
-		string arg2 = argv[4];
 
-		if (arg == "--logging=true" || arg1 == "--logging=true" || arg2 == "--loging=true") {
-			if (arg == arg1 || arg == arg2 || arg1 == arg2) {
-				throwException("Error: Wrong amount of arguments.", date);
-			}
-			logging = true;
-		}
-
-		if (arg.find("--login=") != string::npos || arg1.find("--login=") != string::npos || arg2.find("--login=")) {
-			if ((arg.find("--login=") != string::npos && arg1.find("--login") != string::npos) || (arg.find("--login=") != string::npos && arg2.find("--login") != string::npos) || (arg1.find("--login=") != string::npos && arg2.find("--login") != string::npos)) {
-				throwException("Error: Wrong amount of arguments.", date);
-			}
-
-			if (arg.find("--login=") != string::npos)
-				login = arg.substr(8);
-			if (arg1.find("--login=") != string::npos)
-				login = arg1.substr(8);
-			if (arg2.find("--login=") != string::npos)
-				login = arg2.substr(8);
-		}
-
-		if (arg == "--date=true" || arg1 == "--date=true" || arg2 == "--date=true") {
-			if (arg == arg1 || arg == arg2 || arg1 == arg2) {
-				throwException("Error: Wrong amount of arguments.", date);
-			}
-			date = true;
-		}
-	} else {
-		if (!strcmp(argv[1],"--help"))
-			printHelp();
-	}
-	
+	//check for arguments validity
+	checkArguments(argc, argv, &logging, &date, &login);
 
 	// port was defined in the task assignment
 	unsigned short port = 55555;

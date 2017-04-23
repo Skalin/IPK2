@@ -40,7 +40,7 @@ string getCurrDate();
  * @param bool logging specifies whether to log to console or not
  * @param bool date specifies whether we will print date before every log message
  * @param string msg msg to be printed
- * @param bool std value switching between stdout and stderr, if std is file, we print to stderr, otherwise we are printing to stdout
+ * @param bool std flag switching between stdout and stderr, if std is false, we print to stderr, otherwise we are printing to stdout
  */
 void logConsole(bool logging, bool date, string msg, bool std);
 
@@ -57,6 +57,17 @@ void throwException(const char *message, bool date);
  *
  */
 void printHelp();
+
+/*
+ * Function checks for validity of arguments and throws exception if correct arguments were not passed
+ *
+ * @param int argc amount of arguments passed to program
+ * @param char *argv[] array of string chars containing arguments
+ * @param bool *log pointer to the boolean flag allowing to switch logging to console, if --date is used, pointer will be rewritten
+ * @param bool *date pointer to the boolean flag allowing to switch date showing in logs, if --date is used, pointer will be rewritten
+ * @param string *login pointer to the string containing default login xskala11, if --login arg is used, pointer will be rewritten
+ */
+void checkArguments(int argc, char *argv[], bool *log, bool *date, string *login);
 
 /*
  * Function returns substring from the given string, by delimiter
