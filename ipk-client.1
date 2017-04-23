@@ -2,7 +2,10 @@
 .SH NAME ipk-client - client for solving mathematical operations
 .SH SYNOPSIS
 .B ipk-client
-.IP ip
+.IR IP
+[\fB\-\-logging=\fIBOOL\fR]
+[\fB\-\-date=\fIBOOL\fR]
+[\fB\-\-login=\fILOGIN\fR]
 .SH DESCRIPTION
 .B ipk-client
 client for solving mathematical operations, connects to server, asks for math operations and sends back results.
@@ -30,6 +33,6 @@ There are no bugs on me! (of course there are..)
 .TP
 No other operations than +,-,*,/ are working but the system is ready to be upgraded to solve other operations for example modulo, etc.
 .TP
-Right now, FP operation are not supported.
+Right now, FP operation are not supported. The clients expects to receive only non-decimal numbers.
 .TP
 No other known bugs are present.
