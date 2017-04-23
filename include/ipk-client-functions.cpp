@@ -57,6 +57,9 @@ void printHelp() {
 	cout << "Arguments:" << endl;
 	cout << "  IP\t\t\tSpecifies the IP of the math server in format of IPv4, IPv6 or Hostname. This server should ALWAYS run on port 55555 (connection to this server is forced)" << endl;
 	cout << "  --help\t\tCan be used only when no other arguments are passed. Prints this help message." << endl;
+	cout << "  --login=LOGIN\t\tAllows to change the login of student. Not required argument. Default is \'xskala11\'" << endl;
+	cout << "  --logging=[T/F]\t\tChooses between logging to console all operations or only the BYE message. Not required argument. Default is \'false\'" << endl;
+	cout << "  --date=[T/F]\t\tChooses between showing date in logs or not. Not required argument. Default is \'false\'" << endl;
 	exit(0);
 }
 
