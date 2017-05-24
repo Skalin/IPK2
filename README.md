@@ -1,6 +1,7 @@
 # IPK Project 2
 ##### Dominik Skála, xskala11
 ##### Fakulta Informačních technologií, Vysoké učení technické v Brně
+##### Results: 20 / 20 points
 
 ##### Client for solving mathematical operations
 
