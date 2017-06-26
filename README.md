@@ -11,7 +11,7 @@ All operations are only integer type operations, FP operations are currently not
 Client can solve any operation from range **+,-,*,/**.
 It can solve them with **numbers** that can be saved on **64 bits**.
 
-The program itself works on a simple base. Client sends request message to the server specified in the first required argument, which **runs** on port **55555**, containing **HELLO md5hash(xskala11)\\n**, which is resolved by server.
+The program itself works on a simple base. Client sends request message to the server specified in the first required argument, which **runs** on port **55555**, containing **HELLO md5hash(LOGIN)\\n**, which is resolved by server.
 After that, server is responding with mathematical equations, which must be in format **SOLVE [num1] [op] [num2]\\n**. The spaces between operators and operand are \fB\fIREQUIRED\fR!
 If the operation is successfully resolved, client returns the result in the message with format: **RESULT [result]\\n**, if any error occurs, client is responding with **RESULT ERROR\\n**. The result is a **decimal number** in format **Xn.XX**, where **X** stands for any number from range **0 - 9** and **Xn** stands for any amount of numbers from range **0 - 9**.
 This can take any number of iterations. Only the server can stop the process.
@@ -35,7 +35,7 @@ If the server wants to stop, it has to send message in format **BYE [hash]\n**, 
 ##### $ **ipk-client --help** -- show the help for this program
 ##### $ **ipk-client --logging=BOOL** -- enables logging
 ##### $ **ipk-client --date=BOOL** -- enables showing date in logs
-##### $ **ipk-client --login=XLOGIN99** -- runs the program for the user with this login, which is then hashed using md5 
+##### $ **ipk-client --login=XLOGIN99** -- runs the program for the user with this login, which is then hashed using md5, if no login is given default is used (default is xskala11)
 
 ## Bugs
 No other operations than +,-,*,/ are working but the system is ready to be upgraded to solve other operations for example modulo, etc.
