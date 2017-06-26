@@ -1,5 +1,6 @@
 .TH ipk-client 1
-.SH NAME ipk-client - client for solving mathematical operations
+.SH NAME
+ipk-client - client for solving mathematical operations
 .SH SYNOPSIS
 .B ipk-client
 .IR IP
@@ -12,27 +13,55 @@ client for solving mathematical operations, connects to server, asks for math op
 
 All operations are only integer type operations, FP ops are currently not supported.
 Client can solve any operation from range +,-,*,/.
-It can solve them with numbers up to 64 bits.
+It can solve them with numbers that can be saved on 64 bits.
 
-The program itself works on a simple base. Client sends request in type of HELLO md5hash(xskala11)\\n, which is resolved from server.
-After that, server is responding with mathematical equations, which must be in format SOLVE [num1] [op] [num2]\\n
-If the operations is successfully resolved, client returns the result in the message with format: RESULT [result]\\n, if any error occurs, client is responding with RESULT ERROR\\n
+The program itself works on a simple base. Client sends request message to the server specified in the first required argument, which runs on port 55555, containing HELLO md5hash(xskala11)\\n, which is resolved by server.
+After that, server is responding with mathematical equations, which must be in format SOLVE [num1] [op] [num2]\\n. The spaces between operators and operand are \fB\fIREQUIRED\fR!
+If the operation is successfully resolved, client returns the result in the message with format: RESULT [result]\\n, if any error occurs, client is responding with RESULT ERROR\\n. The result is a \fIdecimal number\fR in format \fB\fIXn.XX\fR, where \fB\fIX\fR stands for any number from range \fB0 - 9\fR and \fB\fIXn\fR stands for any amount of numbers from range \fB0 - 9\fR.
 This can take any number of iterations. Only the server can stop the process.
-if the server wants to stop, it has to send message in format BYE hash
+.TP
+If the server wants to stop, it has to send message in format BYE [hash]\n, the hash is then printed to the console. The hash might not be the same as the one that the client sent. It also might be in the unknown format, which means, that the hash sent from client could not be resolved.
 
 .SH OPTIONS
 .TP
-.BR \ip
+.BR \IP
 Set the IP Address of the server that should be used for communication for receiving mathematical operations.
-IP Address can be a IPv4, or IPv6 or hostname
+IP Address can be an IPv4, or IPv6 or hostname
 .TP
+.BR \-\-logging=\fB\fIBOOL\fR
+Select whether the program logs all operations to consol or logs only the hash from \fBBYE [hash]\fR\n  to console. If the arguments is not used, default is \fBfalse\fR.
+.TP
+.BR \-\-date=\fB\fIBOOL\fR
+Select whether the program uses date in logs or not. The date is in format of hours: \fBHH:MM:SS\fR. If the arguments is not used, default is \fBfalse\fR.
+.TP
+.BR \-\-login=\fB\fILOGIN\fR
+This allows to start the program for any student from IPK course. If this argument is not passed, the default value is used. Default is \fBxskala11\fR.
 .BR \--help
 Prints the help for this program
+
+.SH FILES
+.TP
+.BR \fB/includes/ipk-client-functions.cpp\fR
+\fBipk-client-functions.cpp\fR - contains all definitions of functions used in \fBipk-client.cpp\fR
+.TP
+.BR \fB/includes/ipk-client-functions.h\fR
+\fBipk-client-functions.h\fR - header file containing all declarations of functions used in this project.
+.TP
+.BR \fB/includes/md5/md5.cpp\fR
+\fBmd5.cpp\fR - the library used for md5 hash of login
+.TP
+.BR \fB/includes/md5/md5.h\fR
+\fBmd5.cpp\fR - the header file for the md5 library
+
 .SH BUGS
-There are no bugs on me! (of course there are..)
 .TP
 No other operations than +,-,*,/ are working but the system is ready to be upgraded to solve other operations for example modulo, etc.
-.TP
-Right now, FP operation are not supported. The clients expects to receive only non-decimal numbers.
+.TP MATH ERRORS
+Right now, FP operation are not supported. The clients expects to receive only non-decimal numbers. The overflow of the result is not checked. If any of the operands overflows, the client will return \fBRESULT ERROR\\n\fR.
 .TP
 No other known bugs are present.
+
+
+.SH AUTHOR
+.TP
+Dominik Skála <xskala11@stud.fit.vutbr.cz>

@@ -81,10 +81,8 @@ int main(int argc, char *argv[]) {
 					// if bye msg is not ok, we will continue for new iteration of the cycle
 					continue;
 				} else {
-					// if bye message format is ok, we will print secret and then we will break to close the socket
-					logging = true;
-					logConsole(true, date, returnSubstring(returnSubstring(msg, "\n", false), " ", true) + "\n", false);
-					logging = false;
+					// if bye message format is ok, we will print secret and then we will break to close the socke
+					logConsole(true, date, returnSubstring(returnSubstring(msg, "\n", false), " ", true), false);
 					break;
 				}
 			} else if (op == 2) {
