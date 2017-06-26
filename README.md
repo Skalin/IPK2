@@ -31,11 +31,11 @@ If the server wants to stop, it has to send message in format **BYE [hash]\n**, 
 | **make clean** | all versions of program will be deleted |
 
 ## Client **ipk-client**
-##### $ **ipk-client IP**
-##### $ **ipk-client --help**
-##### $ **ipk-client --logging=BOOL**
-##### $ **ipk-client --date=BOOL**
-##### $ **ipk-client --logging=BOOL**
+##### $ **ipk-client IP** -- runs the client which is requesting the math operations from the server on the IP address given in the argument
+##### $ **ipk-client --help** -- show the help for this program
+##### $ **ipk-client --logging=BOOL** -- enables logging
+##### $ **ipk-client --date=BOOL** -- enables showing date in logs
+##### $ **ipk-client --login=XLOGIN99** -- runs the program for the user with this login, which is then hashed using md5 
 
 ## Bugs
 No other operations than +,-,*,/ are working but the system is ready to be upgraded to solve other operations for example modulo, etc.
